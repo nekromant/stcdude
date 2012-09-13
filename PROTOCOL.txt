@@ -1,0 +1,20 @@
+Misc research notes. 
+Due to the fact, that the vendor is retarted (in places) not willing to open up
+the protocol, we have to do it our own way. 
+
+
+Reading current MCU settings:
+
+PC starts by sending out 2 0x7f's every ~15ms
+MCU calibrates TX based on that, and shits out a bunch of bytes 
+The first 4? look like the magic that stands for partnumber.
+The are also a few bytes that look like several timer values. 
+Probably for XTAL value determination.
+All the rest is WiP. 
+
+While now the effort is to feed the captured data back to the software. 
+While now it's somewhat failing (FTDI gives framing error on Logical Probe.) don't yet know why.
+Trying to simulate that with AVR should prove useful
+
+
+ 

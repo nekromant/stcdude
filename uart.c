@@ -92,7 +92,7 @@ static struct termios oldtio,newtio;
 //int uart_init(char* port, tcflag_t cfl, tcflag_t ifl)
 int uart_init(struct uart_settings_t* us)
 {
-	int fd = open(us->port, O_RDWR | O_NOCTTY | O_NONBLOCK);
+	int fd = open(us->port, O_RDWR | O_NOCTTY);
 	if (fd <0) {
 		fprintf(stderr, "I failed to open port %s\n", us->port);
 		perror("The error is ");
@@ -105,7 +105,7 @@ int uart_init(struct uart_settings_t* us)
 	newtio.c_oflag = us->ofl;
 	/* set input mode (non-canonical, no echo,...) */
 	newtio.c_lflag = 0;
-	newtio.c_cc[VTIME]    = 500;   /* inter-character timer unused */
+	newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
 	newtio.c_cc[VMIN]     = 1;   /* We're non-blocking */
 	cfmakeraw(&newtio);
 	tcflush(fd, TCIFLUSH);
