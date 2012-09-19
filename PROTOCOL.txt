@@ -7,14 +7,100 @@ Reading current MCU settings:
 
 PC starts by sending out 2 0x7f's every ~15ms
 MCU calibrates TX based on that, and shits out a bunch of bytes 
-The first 4? look like the magic that stands for partnumber.
-The are also a few bytes that look like several timer values. 
-Probably for XTAL value determination.
-All the rest is WiP. 
+This denotes the fields
+const char packet[] = {
+	0x46, /* do not care */
+	0xB9, /* do not care */
+/* This and up to the very end is CRC protected */ 
+	0x68, /* direction: 68 mcu2host, 6a - host2mcu */
+	0x00, /* packet size, 2 bytes */
+	0x39, /* This includes payload + direction byte + checksum and stop byte */
+	0x50,
 
-While now the effort is to feed the captured data back to the software. 
-While now it's somewhat failing (FTDI gives framing error on Logical Probe.) don't yet know why.
-Trying to simulate that with AVR should prove useful
+/* 8 times the counter value that measures the incoming pulse */
+/* 2 bytes each. 00 a7 for 5,54346 */
+/* 01 e4 for 16.06734 */ 
+/* All at 19200. Knowing the baud rate, value and crystal frequency ming sense of the formula is 
+ * trivial. Do not forget to take the average */
+	0x00,
+	0xA7,
+	0x00,
+	0xA7,
+	0x00,
+	0xA8,
+	0x00,
+	0xA7,
+	0x00,
+	0xA7,
+	0x00,
+	0xA6,
+	0x00,
+	0xA7,
+	0x00,
+	0xA7,
+
+	0x67, /* version number, stands for 6.7 */
+	0x4A, /* ASCII version code J */
+
+	0x00,
+	0xD2, /* MCU id, byte 1 */
+	0x64, /* MCU id, byte 2 */
+	0x8C,
+	0xFF,
+	0xEC,
+	0xF7,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0xFF,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x57,
+	0x17,
+	0x40,
+	0x00,
+	0x57,
+	0x17,
+	0x40,
+	0x19, /* 2 byte checksum, */ 
+	0xCD, /* Is actually the full sum of payload, BIG ENDIAN */
+	0x16, /* Stop byte. 0x16 */
+};
+
+#endif 
+
+In-detail packet description: 
+So a generic packet looks like: 
+
+0x46
+0xb9
+-------
+0x68 || 0x6a, direction byte
+-------
+PAYLOAD
+-------
+checksum_high
+checksum_low
+0x16
+
+The functions handling the payload can be found in payload.c
+TODO: Move defs to a .h file
+
+The first tasks at hand are:
+* Make a parser of the incoming info packets to print out MCU settings. 
+* Get more dumps and make sense of what do other fields stand for
+* Put up an mcu database (lua?). Disassembly of VB software should be useful
 
 
- 

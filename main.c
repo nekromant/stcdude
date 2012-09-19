@@ -10,70 +10,13 @@
 
 /* Initial effort to send the captured packet back to the software. While now failing hard */
 
-char packet[] = { 
-	0x46, /* Looks like these */
-	0xB9, /* are the magic */
-	0x68, /* number that IDs*/
-	0x00, /* the MCU */
-	0x31,
-	0x50,
-	0x00,
-	0xF3,
-	0x00,
-	0xF1,
-	0x00,
-	0xF2,
-	0x00,
-	0xF1,
-	0x00,
-	0xF1,
-	0x00,
-	0xF2,
-	0x00,
-	0xF2,
-	0x00,
-	0xF2,
-	0x62,
-	0x49,
-	0x00,
-	0xD1,
-	0x70,
-	0x8C,
-	0xFF,
-	0x7F,
-	0xF7,
-	0xFF,
-	0xFF,
-	0xFF,
-	0x00,
-	0x00,
-	0x00,
-	0x03,
-	0x00,
-	0xB0,
-	0x01,
-	0xD7,
-	0x6A,
-	0x00,
-	0xBB,
-	0x71,
-	0x80,
-	0x00,
-	0x14,
-	0x02,
-	0x16,
-};
-
-
-
-
 void pulse(int fd, int n) {
 	/* Send out 2 x 0x7f every ~15 ms */ 
 	char token[] = {0x7f, 0x7f};
 	while(n--)
 	{
 		write(fd,token,ARRAY_SIZE(token));
-		usleep(1000);
+		usleep(13000);
 	}
 	
 }
@@ -102,6 +45,33 @@ void frametimer_update()
     elapsed+=dt;
 }
 
+unsigned short byte_sum(char* payload, int sz) {
+	int i;
+	unsigned short sum=0;
+	for (i=0; i<sz; i++)
+		sum+=payload[sz];
+	return sum;
+}
+
+
+char* pack_paylod(char* payload, int len) {
+	char* packet = malloc(len+8);
+	packet[0]=0x46;
+	packet[1]=0xB9;
+	packet[2]=0x68;
+	unsigned short llen = len+2; /* Account for dir byte and stop byte */
+	/* 8051 is BIG endian */
+	packet[3]=(char) ((llen >>8) & 0xff);
+	packet[4]=(char) (llen & 0xff);
+	memcpy(&packet[5], payload, len);
+	unsigned short sum = byte_sum(payload, len);
+	char* csum = packet[5+len];
+	csum[0] = (char) ((sum >>8) & 0xff);
+	csum[1] = (char) ((sum) & 0xff);
+	csum[2] = 0x16; 
+	return packet;
+}
+
 
 void wait_mark(int fd, int n) {
 	char token;;
@@ -114,20 +84,12 @@ void wait_mark(int fd, int n) {
 		n--;
 		read(fd,&token,1);
 		delta = frametimer_since(0)-a;
-		printf("%f %f %d \n" ,a, delta, n);
+		//printf("%f %f %d \n" ,a, delta, n);
 		a = frametimer_since(0);
 		if ((n<0) && (delta<0.01)) return;
 	}
 }
 
-void _write(int fd, char* buf, int count) {
-	int i;
-	for (i=0; i< count; i++)
-	{
-		write(fd,&buf[i],1);
-		usleep(800);
-	}
-}
 
 int main(int argc, char* argv[])
 {
@@ -135,10 +97,22 @@ printf("create\n");
 	struct uart_settings_t* us = str_to_uart_settings(argv[1]);
 	us->fd = uart_init(us);
 	printf("fs is %d\n",us->fd);
+	printf("Packet len is %x/%hhx\n", ARRAY_SIZE(packet)-2, packet[4]);
+	unsigned short nc = crc16(&packet[2],(unsigned short)ARRAY_SIZE(packet)-5);
+	char* crc = &packet[ARRAY_SIZE(packet)-3];
+	printf("%hx | %hhx %hhx       \n", nc, crc[0], crc[1]);
+	exit(2);
+	bruteforce_poly(packet,ARRAY_SIZE(packet));
 //	pulse(us->fd,100000);
+
 	frametimer_init();
-	wait_mark(us->fd,50);
+	wait_mark(us->fd,5);
+	usleep(100);
+	int n;
 	printf("sending %d bytes\n",ARRAY_SIZE(packet));
-	write(us->fd,&packet,ARRAY_SIZE(packet));
+	write(us->fd, &packet[0], ARRAY_SIZE(packet));
+	printf ("%d bytes written\n", n);
+	perror("err is: ");
+//*/
 	
 }
