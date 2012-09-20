@@ -87,8 +87,6 @@ So a generic packet looks like:
 0x46
 0xb9
 -------
-0x68 || 0x6a, direction byte
--------
 PAYLOAD
 -------
 checksum_high
@@ -98,9 +96,19 @@ checksum_low
 The functions handling the payload can be found in payload.c
 TODO: Move defs to a .h file
 
+payload consists of the following fields (expected)
+direction byte: 0x68 | 0x6a
+packet size 2 byte, big endian
+
+
 The first tasks at hand are:
 * Make a parser of the incoming info packets to print out MCU settings. 
 * Get more dumps and make sense of what do other fields stand for
 * Put up an mcu database (lua?). Disassembly of VB software should be useful
 
 
+/* Set speed packet */
+/* No header
+46B96A000C 8FFEE0001417 818F16 -  1200 
+46B96A000C 8FFFF7001217 81A516 -  34800 
+46B96A000C 8FFFFA001217 81A816 -  57600

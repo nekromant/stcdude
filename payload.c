@@ -4,11 +4,12 @@
 #include <termios.h>
 #include <time.h>
 #include "uart.h"
+#include "stcdude.h"
 
-
-#define MCU2HOST 0x68
-#define HOST2MCU 0x6A
-
+unsigned short reverse_bytes(unsigned short value)
+{
+  return (unsigned short)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
+}
 
 unsigned short byte_sum(char* payload, int sz) {
 	int i;
@@ -45,4 +46,29 @@ void dump_packet(char* packet, int len) {
 		if (0 == (i % 8)) printf("\n"); 
 	}
 	printf("\n-----8<----- \n ");
+}
+
+char* fetch_packet(int fd) {
+	char tmp[8];
+	do {
+		read(fd,tmp,1);
+	} while (tmp[0] != START_BYTE0);
+	
+	/* We got the start marker, yappee! */
+	read(fd, &tmp[1], 4);
+	if (tmp[1] != START_BYTE1)
+		printf("Warning! Second byte looks weird: 0x%hhx vs 0xhhx\n", tmp[1], START_BYTE1);
+	if (tmp[1] != MCU2HOST)
+		printf("Warning! Direction byte incorrect: 0x%hhx vs 0xhhx\n", tmp[2], MCU2HOST);      
+	unsigned short len; 
+	len |= tmp[3]<<8;
+	len |= tmp[4];
+	printf("Packet is expected to be %hd bytes long\n", len);
+	char* data = malloc((int)len+3);
+	read(fd,data,(int)len+3);
+	unsigned short sum = byte_sum(data,len);
+	unsigned short ssum = * (unsigned short *) &data[(int) len];
+	ssum = reverse_bytes(ssum);
+	if (ssum!=sum)
+		printf("Checksum error, dropping packet!\n");
 }
