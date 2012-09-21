@@ -16,8 +16,6 @@ enum {
 struct packet {
 	unsigned short size;
 	char* data;
-	
-
 };
 
 /* Creates an uart settings structure suitable for ISP */

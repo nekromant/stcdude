@@ -78,8 +78,7 @@ void wait_mark(int fd, int n) {
 	int i=0;
 	float a=0.0;
 	float delta;
-	while(1)
-	{
+	while(1) {
 		frametimer_update();
 		n--;
 		read(fd,&token,1);

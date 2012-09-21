@@ -1,0 +1,24 @@
+#!/bin/bash
+# Convert a VB disasm referece dump to a lua mcudb table
+
+echo "-- Please fill in all the testcases later. "
+echo "-- Valid tests are: 'read' 'write' 'config' "
+
+STATE=0
+echo "mcudb = {"
+cat $1 |grep -v _vba|grep -v Choo|grep -v Trim|cut -d":" -f2|tr -d "[\"]"| while read line; do
+    case $STATE in
+	0) 
+	    echo "   { "
+	    echo "   magic = \"$line\","
+	    STATE=1; 
+	    ;;
+	1)
+	    echo "   name  = '$line',"
+	    echo "   tested = { },"
+	    echo "   } ,"
+	    STATE=0
+	    ;;
+    esac
+done
+echo "}"
