@@ -6,7 +6,8 @@
 #include <termios.h>
 #include "uart.h"
 #include "stcdude.h"
-
+#include "lualib.h"
+#include "lauxlib.h"
 
 void usage(char* nm){
 	printf("WARNING: This tool is in no way affiliated with STC MCU Limited. \n");
@@ -37,8 +38,10 @@ int main(int argc, char* argv[]) {
 	char* mcudb = "./mcudb/stc10fx.lua";
 	char* port = "/dev/ttyUSB0";
 	int speed = 19200;
+	lua_State* L = lua_open();
+	luaL_openlibs(L);
 
-	while ((opt = getopt(argc, argv, "ib:d:")) != -1) {
+	while ((opt = getopt(argc, argv, "ib:d:m")) != -1) {
 		switch (opt) {
 		case 'i':
 			action = ACTION_INFO;
@@ -50,6 +53,15 @@ int main(int argc, char* argv[]) {
 		case 't':
 			//nsecs = atoi(optarg);
 			//tfnd = 1;
+			break;
+		case 'm': /* Dirty hack, remove me later */
+			printf("Demonstrating mcudb magic\n");
+			mcudb_open(L, "./init.lua");
+			mcudb_open(L, mcudb);
+			char magic[] = {0xD2, 0xFA};
+			struct mcuinfo *inf = mcudb_query_magic(L,magic);
+			print_mcuinfo(inf);	
+			exit(1);
 			break;
 		default: /* '?' */
 			usage(argv[0]);
@@ -64,10 +76,16 @@ int main(int argc, char* argv[]) {
 	}
 	
 	/* All checks passsed, let's rick'n'roll */
+	mcudb_open(L, "./init.lua");
+	mcudb_open(L, mcudb);
+
+
+
 	struct uart_settings_t* us = stc_uart_settings(port, speed);
 	if (uart_init(us)<0) {
 		exit(EXIT_FAILURE);
 	}
+	
 	
 	
 }

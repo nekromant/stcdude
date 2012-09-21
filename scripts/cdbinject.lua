@@ -72,7 +72,13 @@ function store_scraped_info()
 	 mcu['xram']=xram
 	 mcu['irom']=irom
 	 mcu['speed']=clock
-	 mcu['descr']=description
+	 dsc=""
+	 if description ~= nil then
+	    for u,d in pairs(description) do
+	       dsc=dsc.."\t"..d.."\n";
+	    end
+	 end
+	 mcu['descr']=dsc;
       end
    end
    -- Now let's store scraped info --

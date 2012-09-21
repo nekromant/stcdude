@@ -5,14 +5,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "4K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP'" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	4K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP'\
+",
       iram="0xFF",
       irom="0xFFF",
       magic="D264",
@@ -22,14 +21,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "6K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP%" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	6K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP%\
+",
       iram="0xFF",
       irom="0x17FF",
       magic="D266",
@@ -39,14 +37,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "8K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP#" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP#\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D268",
@@ -56,14 +53,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "10K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D26A",
@@ -73,14 +69,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "12K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D26C",
@@ -95,7 +90,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	4K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP'\
+",
       iram="0xFF",
       irom="0xFFF",
       magic="D244",
@@ -105,7 +106,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	6K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP%\
+",
       iram="0xFF",
       irom="0x17FF",
       magic="D246",
@@ -115,7 +122,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP#\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D248",
@@ -125,7 +138,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D24A",
@@ -135,7 +154,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D24C",
@@ -150,7 +175,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	4K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP'\
+",
       iram="0xFF",
       irom="0xFFF",
       magic="D204",
@@ -160,7 +191,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	6K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP%\
+",
       iram="0xFF",
       irom="0x17FF",
       magic="D206",
@@ -170,7 +207,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP#\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D208",
@@ -180,7 +223,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D20A",
@@ -190,7 +239,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D20C",
@@ -215,14 +270,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "8K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D278",
@@ -232,14 +286,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "10K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D27A",
@@ -249,14 +302,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "12K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D27C",
@@ -266,14 +318,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "14K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	14K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x37FF",
       magic="D27E",
@@ -298,7 +349,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D238",
@@ -308,7 +365,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D23A",
@@ -318,7 +381,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D23C",
@@ -328,7 +397,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	14K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x37FF",
       magic="D23E",
@@ -343,14 +418,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "4K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP'" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	4K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP'\
+",
       iram="0xFF",
       irom="0xFFF",
       magic="D2E4",
@@ -360,14 +434,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "6K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP%" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	6K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP%\
+",
       iram="0xFF",
       irom="0x17FF",
       magic="D2E6",
@@ -377,14 +450,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "8K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP#" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP#\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D2E8",
@@ -394,14 +466,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "10K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D2EA",
@@ -411,14 +482,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "12K bytes flash ROM, 512 bytes data RAM,",
-        "On-chip EEPROM, UART, WDT, ISP/IAP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D2EC",
@@ -433,7 +503,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	4K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP'\
+",
       iram="0xFF",
       irom="0xFFF",
       magic="D2C4",
@@ -443,7 +519,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	6K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP%\
+",
       iram="0xFF",
       irom="0x17FF",
       magic="D2C6",
@@ -453,7 +535,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP#\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D2C8",
@@ -463,7 +551,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D2CA",
@@ -473,7 +567,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D2CC",
@@ -488,7 +588,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	4K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP'\
+",
       iram="0xFF",
       irom="0xFFF",
       magic="D284",
@@ -498,7 +604,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	6K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP%\
+",
       iram="0xFF",
       irom="0x17FF",
       magic="D286",
@@ -508,7 +620,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP#\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D288",
@@ -518,7 +636,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D28A",
@@ -528,7 +652,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	On-chip EEPROM, UART, WDT, ISP/IAP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D28C",
@@ -553,14 +683,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "8K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D2F8",
@@ -570,14 +699,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "10K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D2FA",
@@ -587,14 +715,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "12K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D2FC",
@@ -604,14 +731,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr={
-        "8051-based microcontroller with 1T(1-clock) High-Speed Core,",
-        "Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,",
-        "Alternative build-in oscillator,",
-        "Independent Baud Rate Generator, Programmable Clock-Out,",
-        "14K bytes flash ROM, 512 bytes data RAM,",
-        "UART, WDT, ISP" 
-      },
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	14K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x37FF",
       magic="D2FE",
@@ -636,7 +762,13 @@ mcudb = {
       tested={  } 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	8K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x1FFF",
       magic="D2B8",
@@ -646,7 +778,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	10K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x27FF",
       magic="D2BA",
@@ -656,7 +794,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	12K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x2FFF",
       magic="D2BC",
@@ -666,7 +810,13 @@ mcudb = {
       xram="0xFF" 
     },
     {
-      descr=nil,
+      descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
+	Dual DPTR, 36-40 I/O Lines, 2 Timers/Counters,\
+	Alternative build-in oscillator,\
+	Independent Baud Rate Generator, Programmable Clock-Out,\
+	14K bytes flash ROM, 512 bytes data RAM,\
+	UART, WDT, ISP\
+",
       iram="0xFF",
       irom="0x37FF",
       magic="D2BE",

@@ -18,6 +18,25 @@ struct packet {
 	char* data;
 };
 
+struct mcuinfo {
+	char* name;
+	char magic[2];
+	size_t iramsz;
+	size_t xramsz;
+	size_t iromsz;
+	int speed;
+	char* descr;
+};
+
+/* 
+-- tested can be one of the following flags:
+-- rflash wflash 
+-- reeprom weeprom
+-- rinfo winfo
+*/
+
+
+struct mcuinfo* mcudb_query_magic(void* L, char magic[2]);
 /* Creates an uart settings structure suitable for ISP */
 struct uart_settings_t* stc_uart_settings(char* port, int speed);
 /* opens up the port */

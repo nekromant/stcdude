@@ -1,4 +1,4 @@
-stcdude: stcdude.c payload.c uart.c
+stcdude: stcdude.c payload.c uart.c mcudb.c
 	$(CC) -o $(@) $(^) -llua
 
 stcplay: main.c uart.c payload.c
