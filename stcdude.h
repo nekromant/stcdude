@@ -42,4 +42,10 @@ struct uart_settings_t* stc_uart_settings(char* port, int speed);
 /* opens up the port */
 int uart_init(struct uart_settings_t* us);
 
+/* Start pulsing with data on the descriptor */
+void start_pulsing(int fd, int delay, char* data, size_t datasz);
+
+/* Stop pulsing */ 
+void stop_pulsing();
+
 #endif

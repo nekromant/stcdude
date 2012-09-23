@@ -85,8 +85,12 @@ int main(int argc, char* argv[]) {
 	if (uart_init(us)<0) {
 		exit(EXIT_FAILURE);
 	}
+	char pchar = 'c';
 	
-	
+	start_pulsing(fileno(stdout), 1000000, &pchar, 1); 
+	sleep(5);
+	stop_pulsing();
+	sleep(1);
 	
 }
 

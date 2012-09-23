@@ -3,20 +3,24 @@
 #include <unistd.h>
 #include <termios.h>
 #include <time.h>
+#include <sys/time.h>
+#include <pthread.h> 
+#include <errno.h>
+
 #include "uart.h"
 #include "stcdude.h"
 
 unsigned short reverse_bytes(unsigned short value)
 {
-  return (unsigned short)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
+return (unsigned short)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
 }
 
 unsigned short byte_sum(char* payload, int sz) {
-	int i;
-	unsigned short sum=0;
-	for (i=0; i<sz; i++)
-		sum+=payload[sz];
-	return sum;
+int i;
+unsigned short sum=0;
+for (i=0; i<sz; i++)
+	sum+=payload[sz];
+return sum;
 }
 
 
@@ -71,4 +75,42 @@ char* fetch_packet(int fd) {
 	ssum = reverse_bytes(ssum);
 	if (ssum!=sum)
 		printf("Checksum error, dropping packet!\n");
+}
+
+
+struct pulsedata {
+	pthread_t th;
+	int fd;
+	int delay;
+	int running;
+	char* data;
+	size_t dtsz;
+};
+
+
+void* pulse_thread(void* ptr) {
+	struct pulsedata* pdata = ptr;
+	while (pdata->running)
+	{
+		write(pdata->fd, pdata->data, pdata->dtsz); 
+		usleep(pdata->delay);
+	}
+	pthread_exit(NULL);
+};
+
+static struct pulsedata pdata; 
+
+void start_pulsing(int fd, int delay, char* data, size_t datasz) {
+	pdata.fd = fd;
+	pdata.delay = delay;
+	pdata.data = data;
+	pdata.dtsz = datasz;
+	pdata.running = 1;
+	pthread_create(&pdata.th, NULL, pulse_thread, &pdata);
+}
+
+
+void stop_pulsing() {
+	pdata.running=0;
+	pthread_join(pdata.th, NULL);
 }
