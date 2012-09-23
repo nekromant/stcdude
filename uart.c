@@ -48,6 +48,17 @@ struct uart_settings_t* stc_uart_settings(char* port, int speed) {
 
 
 static struct termios oldtio,newtio;
+
+block_read(int fd, char* buf, int sz)
+{
+	int n;
+	while(sz) {
+		n = read(fd, buf, sz);
+		sz -= n;
+		buf += n;
+	}
+}
+
 //int uart_init(char* port, tcflag_t cfl, tcflag_t ifl)
 int uart_init(struct uart_settings_t* us)
 {
@@ -69,5 +80,7 @@ int uart_init(struct uart_settings_t* us)
 	cfmakeraw(&newtio);
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&newtio);
+	us->fd=fd;
 	return fd;
 }
+

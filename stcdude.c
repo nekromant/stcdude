@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	lua_State* L = lua_open();
 	luaL_openlibs(L);
 
-	while ((opt = getopt(argc, argv, "ib:d:m")) != -1) {
+	while ((opt = getopt(argc, argv, "ib:d:mp:")) != -1) {
 		switch (opt) {
 		case 'i':
 			action = ACTION_INFO;
@@ -53,6 +53,9 @@ int main(int argc, char* argv[]) {
 		case 't':
 			//nsecs = atoi(optarg);
 			//tfnd = 1;
+			break;
+		case 'p':
+			port = optarg;
 			break;
 		case 'm': /* Dirty hack, remove me later */
 			printf("Demonstrating mcudb magic\n");
@@ -85,12 +88,19 @@ int main(int argc, char* argv[]) {
 	if (uart_init(us)<0) {
 		exit(EXIT_FAILURE);
 	}
-	char pchar = 'c';
-	
-	start_pulsing(fileno(stdout), 1000000, &pchar, 1); 
-	sleep(5);
-	stop_pulsing();
-	sleep(1);
-	
+	printf("fd is %d\n", us->fd );
+	char pulsechar[] = { 0x7f, 0x7f };
+	switch (action)
+	{
+	case ACTION_INFO:
+		
+		printf("Waiting for an infopacket from MCU...\n");
+       		start_pulsing(us->fd, 100000, pulsechar, 2); 
+		struct packet* packet = fetch_packet(us->fd);
+		stop_pulsing();
+		dump_packet(packet->data, packet->size);
+		sleep(1);
+		break;
+	}
 }
 

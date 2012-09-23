@@ -44,37 +44,53 @@ char* pack_paylod(char* payload, int len, char* dir) {
 
 void dump_packet(char* packet, int len) {
 	int i; 
-	printf("-----8<----- \n ");
+	printf("-----8<----- ");
 	for (i=0; i<len; i++) {
-		printf(" 0x%hhx ", packet[i]);
 		if (0 == (i % 8)) printf("\n"); 
+		printf(" 0x%hhx ", packet[i]);
+		
 	}
 	printf("\n-----8<----- \n ");
 }
 
-char* fetch_packet(int fd) {
-	char tmp[8];
+struct packet* fetch_packet(int fd) {
+	unsigned char tmp[128];
 	do {
 		read(fd,tmp,1);
+		//	printf("!\n");
 	} while (tmp[0] != START_BYTE0);
 	
 	/* We got the start marker, yappee! */
-	read(fd, &tmp[1], 4);
-	if (tmp[1] != START_BYTE1)
-		printf("Warning! Second byte looks weird: 0x%hhx vs 0xhhx\n", tmp[1], START_BYTE1);
-	if (tmp[1] != MCU2HOST)
-		printf("Warning! Direction byte incorrect: 0x%hhx vs 0xhhx\n", tmp[2], MCU2HOST);      
-	unsigned short len; 
-	len |= tmp[3]<<8;
-	len |= tmp[4];
+	block_read(fd, &tmp[1], 4);
+	
+	if (tmp[1] != START_BYTE1) {
+		printf("Warning! Second byte looks weird: 0x%hhx vs 0x%hhx\n", tmp[1], START_BYTE1);
+	}
+
+	if (tmp[2] != MCU2HOST){
+		printf("Warning! Direction byte incorrect: 0x%hhx vs 0x%hhx\n", tmp[2], MCU2HOST);      }
+	
+	unsigned short len=0; 
+	len |= (unsigned short) tmp[3]<<8;
+	len |= (unsigned short) tmp[4];
 	printf("Packet is expected to be %hd bytes long\n", len);
+	struct packet *pck = malloc(sizeof(struct packet));
 	char* data = malloc((int)len+3);
-	read(fd,data,(int)len+3);
+	pck->data = data;
+	pck->size = len;
+	memcpy
+	block_read(fd,data,(int)len);
 	unsigned short sum = byte_sum(data,len);
 	unsigned short ssum = * (unsigned short *) &data[(int) len];
 	ssum = reverse_bytes(ssum);
-	if (ssum!=sum)
+	printf("checksum: %hx vs %hx\n", sum , ssum);
+	if (ssum!=sum) {
 		printf("Checksum error, dropping packet!\n");
+		free(data);
+		free(pck);
+		return 0;
+	}
+	return pck;
 }
 
 
@@ -93,7 +109,7 @@ void* pulse_thread(void* ptr) {
 	while (pdata->running)
 	{
 		write(pdata->fd, pdata->data, pdata->dtsz); 
-		usleep(pdata->delay);
+		fflush(stdout);
 	}
 	pthread_exit(NULL);
 };
