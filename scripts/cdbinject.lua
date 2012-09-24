@@ -1,3 +1,4 @@
+#!/usr/bin/lua
 require("io");
 dofile('scripts/dumper.lua')
 
