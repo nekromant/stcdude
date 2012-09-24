@@ -26,6 +26,8 @@ void usage(char* nm){
 	printf("\t -W filename.bin \tupload binary file from flash\n");
 	printf("\t -E filename.bin \tupload binary file from eeprom\n");
 	printf("This is free software, feel free to redistribute it under the terms\n");
+	printf("Extra developer options:\n");
+	printf("\t -l packet monitoring mode:\n");
 	printf("GPLv3 or above. See COPYING for details\n");
 }
 
@@ -41,7 +43,7 @@ int main(int argc, char* argv[]) {
 	lua_State* L = lua_open();
 	luaL_openlibs(L);
 
-	while ((opt = getopt(argc, argv, "ib:d:mp:")) != -1) {
+	while ((opt = getopt(argc, argv, "ib:d:mp:l")) != -1) {
 		switch (opt) {
 		case 'i':
 			action = ACTION_INFO;
@@ -65,6 +67,10 @@ int main(int argc, char* argv[]) {
 			struct mcuinfo *inf = mcudb_query_magic(L,magic);
 			print_mcuinfo(inf);	
 			exit(1);
+			break;
+		case 'l':
+			printf("Starting to monitor all incoming packets\n");
+			action = ACTION_MON;
 			break;
 		default: /* '?' */
 			usage(argv[0]);
@@ -90,16 +96,21 @@ int main(int argc, char* argv[]) {
 	}
 	printf("fd is %d\n", us->fd );
 	char pulsechar[] = { 0x7f, 0x7f };
+	struct packet* packet;
 	switch (action)
 	{
 	case ACTION_INFO:
-		
 		printf("Waiting for an infopacket from MCU...\n");
        		start_pulsing(us->fd, 100000, pulsechar, 2); 
-		struct packet* packet = fetch_packet(us->fd);
+		packet = fetch_packet(us->fd);
 		stop_pulsing();
-		dump_packet(packet->data, packet->size);
+		parse_info_packet(L, packet);
 		sleep(1);
+		break;
+	case ACTION_MON:
+		packet = fetch_packet(us->fd);
+		free(packet->data);
+		free(packet);
 		break;
 	}
 }

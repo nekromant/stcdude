@@ -4,6 +4,7 @@
 enum {
 	ACTION_NONE,
 	ACTION_INFO,
+	ACTION_MON, /* Packet monitoring */
 };
 
 
@@ -27,6 +28,13 @@ struct mcuinfo {
 	int speed;
 	char* descr;
 };
+
+#define DUMP_PACKETS
+#ifdef DUMP_PACKETS
+#define do_dump_packet(pck, len) dump_packet(pck,len)
+#else
+#define do_dump_packet(pck, len) ;;
+#endif
 
 /* 
 -- tested can be one of the following flags:

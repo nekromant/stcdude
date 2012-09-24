@@ -8,6 +8,8 @@
 #include <errno.h>
 
 #include "uart.h"
+#include "lualib.h"
+#include "lauxlib.h"
 #include "stcdude.h"
 
 unsigned short reverse_bytes(unsigned short value)
@@ -83,6 +85,7 @@ struct packet* fetch_packet(int fd) {
 	unsigned short sum = byte_sum(data, len-3);
 	unsigned short ssum = * (unsigned short *) &data[(int) len-3];
 	ssum = reverse_bytes(ssum);
+        do_dump_packet(data, len);
 	if (ssum!=sum) {
 		printf("Checksum error, dropping packet!\n");
 		free(data);
@@ -128,4 +131,26 @@ void start_pulsing(int fd, int delay, char* data, size_t datasz) {
 void stop_pulsing() {
 	pdata.running=0;
 	pthread_join(pdata.th, NULL);
+}
+
+
+typedef struct info_packet {
+	unsigned char dir;
+	unsigned short len;
+	unsigned char typebyte; //??
+	unsigned short freq_samples[8];
+	unsigned char ldr_vnumber;
+	unsigned char ldr_vchar;
+	unsigned char nilbyte; 
+	unsigned char mcuid[2];
+	
+} __attribute__ ((packed));
+
+struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck) {
+	struct info_packet *inf = pck->data;
+	printf("MCU magic: %hhx %hhx", inf->mcuid[0], inf->mcuid[1]);
+	struct mcuinfo *minf = mcudb_query_magic(L,inf->mcuid);
+	print_mcuinfo(minf);
+	/* TODO: Calculate the frequency, figure out other bytes */
+
 }
