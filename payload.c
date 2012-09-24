@@ -15,11 +15,11 @@ unsigned short reverse_bytes(unsigned short value)
 return (unsigned short)((value & 0xFFU) << 8 | (value & 0xFF00U) >> 8);
 }
 
-unsigned short byte_sum(char* payload, int sz) {
+unsigned short byte_sum(unsigned char* payload, int sz) {
 int i;
 unsigned short sum=0;
 for (i=0; i<sz; i++)
-	sum+=payload[sz];
+	sum+=payload[i];
 return sum;
 }
 
@@ -47,7 +47,7 @@ void dump_packet(char* packet, int len) {
 	printf("-----8<----- ");
 	for (i=0; i<len; i++) {
 		if (0 == (i % 8)) printf("\n"); 
-		printf(" 0x%hhx ", packet[i]);
+		printf(" 0x%2hhx ", packet[i]);
 		
 	}
 	printf("\n-----8<----- \n ");
@@ -78,12 +78,11 @@ struct packet* fetch_packet(int fd) {
 	char* data = malloc((int)len+3);
 	pck->data = data;
 	pck->size = len;
-	memcpy
-	block_read(fd,data,(int)len);
-	unsigned short sum = byte_sum(data,len);
-	unsigned short ssum = * (unsigned short *) &data[(int) len];
+	memcpy(data,&tmp[2],3);
+	block_read(fd,&data[3],(int)len-3);
+	unsigned short sum = byte_sum(data, len-3);
+	unsigned short ssum = * (unsigned short *) &data[(int) len-3];
 	ssum = reverse_bytes(ssum);
-	printf("checksum: %hx vs %hx\n", sum , ssum);
 	if (ssum!=sum) {
 		printf("Checksum error, dropping packet!\n");
 		free(data);
