@@ -147,18 +147,19 @@ typedef struct info_packet {
 } __attribute__ ((packed));
 
 
-#define ALPHA 579112.0945716962
+#define ALPHA 580706.8955206028
 
 struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate) {
 	struct info_packet *inf = pck->data;
 	struct mcuinfo *minf = mcudb_query_magic(L,inf->mcuid);
 	print_mcuinfo(minf);
+	printf("MCU Options information:\n");
 	int i;
 	for (i=0; i<8;i++) 
 		inf->freq_samples[i] = reverse_bytes(inf->freq_samples[i]);
-	unsigned int freq_avg = 0;
-	for (i=0; i<8;i++) freq_avg+= (int) inf->freq_samples[i];
-	freq_avg = freq_avg / 8;;
+	float avg = 0;
+	for (i=0; i<8;i++) avg+= (float) (inf->freq_samples[i]+1);
+	avg = avg / 8;;
 	
 	/* 
 	 *
@@ -195,25 +196,27 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	 *
 	 * Now let's convert these to float and take the average
 	 * 	
-	 * float avg = ( (float) (0x16b * 7) + (float) 0x16c )/ 8.0;
-	 *      
-	 *  And that's 363.125000
+	 * float avg = ( (float) (0x16c * 7) + (float) 0x16d )/ 8.0;
+	 *   (Remember the old trick with +1 for all the timer values ? )
+	 * 
+	 *  And that's 364.125000
 	 *
-	 *                 19200 * 363.125
+	 *                 19200 * 364.125
 	 * 12.03912 =    ------------------
 	 *                     alpha    
 	 *
-	 * So alpha is 579112.0945716962
+	 * So alpha is 580706.8955206028
 	 * 
 	 * Not the very best way do do this stuff, but it WORKS. And takes in 
 	 * account any value preprocessing they might have done the loader. 
-	 * And give more or less accurate results. 
+	 * And gives more or less accurate results. 
 	 * 
 	 */
 
-	float T = (ALPHA / ((float) baudrate * (float) freq_avg ) );
+
+	float T = (ALPHA / ((float) baudrate * avg ) );
 	float freq  = 1.0/T ; 
-	printf("MCU Clock: %f Mhz (%hd raw)\n", freq, freq_avg);
+	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
 
 
 }

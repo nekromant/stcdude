@@ -41,7 +41,7 @@ lua_State* mcudb_open(lua_State* L, char* file)
 
 
 void print_mcuinfo(struct mcuinfo *mi) {
-	printf("--- 8< ---\n");
+	printf("MCU DB information\n");
 	printf("Part name:\t %s\n", mi->name);
 	printf("Magic bytes:\t %hhX%hhX\n", mi->magic[0],mi->magic[1]);
 	printf("IRAM size:\t %d (0x%x) bytes\n", mi->iramsz+1, mi->iramsz+1);
@@ -52,7 +52,6 @@ void print_mcuinfo(struct mcuinfo *mi) {
 		printf("Description:\n");
 		printf(mi->descr);
 	}
-	printf("--- 8< ---\n");
 }
 
 
