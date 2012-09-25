@@ -75,8 +75,8 @@ int uart_init(struct uart_settings_t* us)
 	newtio.c_oflag = us->ofl;
 	/* set input mode (non-canonical, no echo,...) */
 	newtio.c_lflag = 0;
-	newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
-	newtio.c_cc[VMIN]     = 1;   /* We're non-blocking */
+	newtio.c_cc[VTIME]    = 0; 
+	newtio.c_cc[VMIN]     = 1; 
 	cfmakeraw(&newtio);
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&newtio);

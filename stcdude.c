@@ -16,6 +16,7 @@ void usage(char* nm){
 	printf("Usage: %s [options] action\n", nm);
 	printf("Valid options are:\n");
 	printf("\t -p /dev/ttyUSB0 \tspecify serial port to use\n");
+	printf("\t -b baud \tspecify baud rate to use\n");
 	printf("\t -d database \tspecify mcudb to use\n");
 	printf("Valid actions are:\n");
 	printf("\t -h \tprint this help and exit\n");
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]) {
 	lua_State* L = lua_open();
 	luaL_openlibs(L);
 
-	while ((opt = getopt(argc, argv, "ib:d:mp:l")) != -1) {
+	while ((opt = getopt(argc, argv, "ib:d:mp:lb:")) != -1) {
 		switch (opt) {
 		case 'i':
 			action = ACTION_INFO;
@@ -51,6 +52,9 @@ int main(int argc, char* argv[]) {
 		case 'd':
 			mcudb = optarg;
 			printf("Using mcudb file: %s\n", mcudb);
+			break;
+		case 'b':
+			speed = atoi(optarg);
 			break;
 		case 't':
 			//nsecs = atoi(optarg);
@@ -94,6 +98,7 @@ int main(int argc, char* argv[]) {
 	if (uart_init(us)<0) {
 		exit(EXIT_FAILURE);
 	}
+	
 	printf("fd is %d\n", us->fd );
 	char pulsechar[] = { 0x7f, 0x7f };
 	struct packet* packet;
@@ -101,10 +106,10 @@ int main(int argc, char* argv[]) {
 	{
 	case ACTION_INFO:
 		printf("Waiting for an infopacket from MCU...\n");
-       		start_pulsing(us->fd, 100000, pulsechar, 2); 
+       		start_pulsing(us->fd, 145000, pulsechar, 2); 
 		packet = fetch_packet(us->fd);
 		stop_pulsing();
-		parse_info_packet(L, packet);
+		parse_info_packet(L, packet, speed);
 		sleep(1);
 		break;
 	case ACTION_MON:

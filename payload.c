@@ -146,11 +146,74 @@ typedef struct info_packet {
 	
 } __attribute__ ((packed));
 
-struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck) {
+
+#define ALPHA 579112.0945716962
+
+struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate) {
 	struct info_packet *inf = pck->data;
-	printf("MCU magic: %hhx %hhx", inf->mcuid[0], inf->mcuid[1]);
 	struct mcuinfo *minf = mcudb_query_magic(L,inf->mcuid);
 	print_mcuinfo(minf);
-	/* TODO: Calculate the frequency, figure out other bytes */
+	int i;
+	for (i=0; i<8;i++) 
+		inf->freq_samples[i] = reverse_bytes(inf->freq_samples[i]);
+	unsigned int freq_avg = 0;
+	for (i=0; i<8;i++) freq_avg+= (int) inf->freq_samples[i];
+	freq_avg = freq_avg / 8;;
+	
+	/* 
+	 *
+	 *  Just a short note of how this was cracked. 
+	 *
+	 *  Several (n) bits at a known baudrate are measured by the mcu
+	 *  8 times. The timer has a prescaler (1 or 12 by spec). Then, we 
+	 *  can calculate MCU clock period as follows: 
+	 * 
+	 *                    n
+	 *  T =  ---------------------------------------------
+	 *         baudrate * averge counter value / prescaler
+	 * 
+	 *  Lets call (n / prescaler) as 'alpha', constant coefficient.
+	 * 
+	 *                    alpha         
+	 *  T =   ------------------------------
+	 *         baudrate * avg counter value
+	 * 
+	 *  Given a few samples, an analyser dump and a few seconds of trivial math 
+	 *  we can determine 'alpha' value experimentally.  
+	 * 
+	 *  Once done, the mcu clock (and hence the crystal frequency) is: 
+	 *  
+	 *  => F = 1/T
+	 * 
+	 * **************************************
+	 * Enough theory, let's put it to practice. 
+	 * 19200, 8e1. 
+	 * STC ISP Tool reports 12.03912 Mhz
+	 * Logical Analyzer dump reports: 
+	 *
+	 * 0x16b 0x16b 0x16b 0x16b 0x16b 0x16b 0x16b 0x16c  
+	 *
+	 * Now let's convert these to float and take the average
+	 * 	
+	 * float avg = ( (float) (0x16b * 7) + (float) 0x16c )/ 8.0;
+	 *      
+	 *  And that's 363.125000
+	 *
+	 *                 19200 * 363.125
+	 * 12.03912 =    ------------------
+	 *                     alpha    
+	 *
+	 * So alpha is 579112.0945716962
+	 * 
+	 * Not the very best way do do this stuff, but it WORKS. And takes in 
+	 * account any value preprocessing they might have done the loader. 
+	 * And give more or less accurate results. 
+	 * 
+	 */
+
+	float T = (ALPHA / ((float) baudrate * (float) freq_avg ) );
+	float freq  = 1.0/T ; 
+	printf("MCU Clock: %f Mhz (%hd raw)\n", freq, freq_avg);
+
 
 }
