@@ -110,8 +110,8 @@ void* pulse_thread(void* ptr) {
 	struct pulsedata* pdata = ptr;
 	while (pdata->running)
 	{
-		write(pdata->fd, pdata->data, pdata->dtsz); 
-		fflush(stdout);
+		write(pdata->fd, pdata->data, pdata->dtsz);
+		usleep(pdata->delay);
 	}
 	pthread_exit(NULL);
 };
@@ -242,10 +242,18 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	 * 
 	 */
 
-
-	float T = (6.97 * 1000000 / ((float) baudrate * avg * 12 ) );
-	float freq  = 1.0/T ; 
+	float freq = (((float) baudrate * avg * 12 ) / (6.97 * 1000000) );
 	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
+	inf->len = reverse_bytes(inf->len);
+/*
+	printf("Dumping interesting bytes...\n");
+	printf("---8<---\n");
 
+	char* data = &inf->nilbyte;
 
+	for (i=0;i<57-(8*3);i++) 
+		fprintf(stderr, "%hhx \n", data[i]);
+	printf("---8<---");
+*/
+	return minf;
 }

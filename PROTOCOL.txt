@@ -47,8 +47,8 @@ const char packet[] = {
 	0x64, /* MCU id, byte 2 */
 	0x8C,
 	0xFF,
-	0xEC,
-	0xF7,
+	0xEC, 
+	0xF7, /* RC == 7d 
 	0xFF,
 	0xFF,
 	0xFF,
@@ -97,18 +97,71 @@ The functions handling the payload can be found in payload.c
 TODO: Move defs to a .h file
 
 payload consists of the following fields (expected)
+
 direction byte: 0x68 | 0x6a
-packet size 2 byte, big endian
+* packet size 2 byte, big endian
+* packet type??
+* data with varing size 
 
 
 The first tasks at hand are:
-* Make a parser of the incoming info packets to print out MCU settings. 
-* Get more dumps and make sense of what do other fields stand for
-* Put up an mcu database (lua?). Disassembly of VB software should be useful
+* Make a parser of the incoming info packets to print out MCU settings. *Partially done
+* Get more dumps and make sense of what do other fields stand for (spacemonkey, plz deliver!)
+* Put up an mcu database (lua?). Disassembly of VB software should be useful *DONE
 
 
-/* Set speed packet */
-/* No header
-46B96A000C 8FFEE0001417 818F16 -  1200 
-46B96A000C 8FFFF7001217 81A516 -  34800 
-46B96A000C 8FFFFA001217 81A816 -  57600
+
+Okay, once we're through with the info packet, io is as follows (I guess)
+
+HOST: 0x7f 0x7f 0x7f....   (1)
+MCU: infopacket (2)
+HOST: Gimme magic byte? (3)
+MCU: magic byte packet 8F (4)
+HOST: Let's check THESE baudrate settings (via 8F) (5)
+MCU: responds in the new baudrate (6)
+HOST: Let's commit THESE baudrate settings (via 8E) (7)
+/* data io */
+/* commit new fuses, lock, etc */
+
+Packets of type (5) and (7) are below. We need to make sense of 'em. 
+
+/* These are at 20M quartz */
+46B96A000D 8F C0F5 3F16 2882 03BA16 115200
+46B96A000D 8E C0F5 3F16 28   033616 <-- Second packet for 115200
+
+46B96A000D 8F C0EA 3F2C 2882 03C516 57600
+46B96A000D 8E C0EA 3F2C 28   034116 <-- Second packet for 57600
+
+46B96A000D 8F C0DF 3F42 2882 03C516 38400
+46B96A000D 8E C0DF 3F42 28   034116 <-- Second packet for 38400
+
+46B96A000D 8F C0D4 3F58 2882 03C516 28800
+46B96A000D 8E C0D4 3F58 28   034116 <-- Second packet for 28800
+
+
+/* These are at 12M quartz */
+46B96A000D 8F C0F3 3F1A 2883 03BD16 57600
+46B96A000D 8E C0F3 3F1A 28   033F16 <-- Second packet for 57600
+46B96A000D 8F C0EC 3F28 2883 03C416 38400
+46B96A000D 8E C0EC 3F28 28   033F16 <-- Second packet for 38400
+46B96A000D 8F C0E6 3F34 2883 03CA16 28800
+46B96A000D 8E C0E6 3F34 28   034516 <-- Second packet for 28800
+
+
+/* STRUCTURE */ 
+
+46B96A000D - header
+
+8F - packet type?
+C0 - WTF???
+F5 - BRT register value for brate generator
+3F - WTF??
+16 - TMOD ?
+28 - WTF??
+82 - WTF??
+
+                         
+115200 = SysCLK / 2 /12 / (256 - BRT)
+
+
+03BA16

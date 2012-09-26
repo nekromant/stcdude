@@ -5,6 +5,7 @@ enum {
 	ACTION_NONE,
 	ACTION_INFO,
 	ACTION_MON, /* Packet monitoring */
+	ACTION_DOWN
 };
 
 
@@ -55,5 +56,7 @@ void start_pulsing(int fd, int delay, char* data, size_t datasz);
 
 /* Stop pulsing */ 
 void stop_pulsing();
+
+#define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 
 #endif

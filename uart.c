@@ -70,6 +70,7 @@ int uart_init(struct uart_settings_t* us)
 	}
 	tcgetattr(fd,&oldtio); /* save current port settings */
 	bzero(&newtio, sizeof(newtio));
+	cfmakeraw(&newtio);
 	newtio.c_cflag =  us->cfl | CLOCAL | CREAD;
 	newtio.c_iflag = us->ifl;
 	newtio.c_oflag = us->ofl;
@@ -77,7 +78,6 @@ int uart_init(struct uart_settings_t* us)
 	newtio.c_lflag = 0;
 	newtio.c_cc[VTIME]    = 0; 
 	newtio.c_cc[VMIN]     = 1; 
-	cfmakeraw(&newtio);
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&newtio);
 	us->fd=fd;
