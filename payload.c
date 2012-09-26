@@ -163,58 +163,87 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	
 	/* 
 	 *
-	 *  Just a short note of how this was cracked. 
+	 *  Just a short note of how this was cracked and some fun calculus. 
 	 *
 	 *  Several (n) bits at a known baudrate are measured by the mcu
-	 *  8 times. The timer has a prescaler (1 or 12 by spec). Then, we 
-	 *  can calculate MCU clock period as follows: 
+	 *  8 times. The timer has a prescaler (1 or 12 by spec). So, let's 
+	 *  throw up a small equation with a few parameters. 
+	 *
+	 *
+	 *                                     n
+	 *  T * average counter value   =  -------------
+	 *                                  baudrate
+	 *
+	 *  Where T is the peiod of the counter clock. Since that is prescaled:
+	 *
+	 *                 1            prescaler
+	 *   T =   ---------------- =  ------------
+	 *          F / prescaler           F
+	 *
+	 *  prescaler                  n
+	 *  ----------  =  ---------------------------------------------
+	 *     F             baudrate * averge counter value
 	 * 
-	 *                    n
-	 *  T =  ---------------------------------------------
-	 *         baudrate * averge counter value / prescaler
+	 *  So, the MCU clock period is
 	 * 
-	 *  Lets call (n / prescaler) as 'alpha', constant coefficient.
+	 *                     n * 1000000         
+	 *  Tc =   -----------------------------------------
+	 *         baudrate * avg counter value * prescaler
 	 * 
-	 *                    alpha         
-	 *  T =   ------------------------------
-	 *         baudrate * avg counter value
 	 * 
-	 *  Given a few samples, an analyser dump and a few seconds of trivial math 
-	 *  we can determine 'alpha' value experimentally.  
-	 * 
-	 *  Once done, the mcu clock (and hence the crystal frequency) is: 
+	 *  So we ave a few parameters to figure out:
+	 *  n and prescaler. 
+	 *  We can call this 'alpha' coefficient and determine value experimentally. 
+	 *  But this will give us some rounding error. 
+	 *  Luckily I noticed, that at 12M quartz the counter value is roughly the 
+	 *  7 bit HIGH period in uS. 
+	 *  That effectively gives us the n = 7
+	 *  And having a look at the datasheet tells us that the prescaler for the timer
+	 *  can be either 1 or 12. That gives us the prescaler = 12.
 	 *  
-	 *  => F = 1/T
-	 * 
-	 * **************************************
-	 * Enough theory, let's put it to practice. 
-	 * 19200, 8e1. 
-	 * STC ISP Tool reports 12.03912 Mhz
-	 * Logical Analyzer dump reports: 
+	 *  Once done, the mcu clock (and hence the crystal frequency) is: 
 	 *
-	 * 0x16b 0x16b 0x16b 0x16b 0x16b 0x16b 0x16b 0x16c  
-	 *
-	 * Now let's convert these to float and take the average
-	 * 	
-	 * float avg = ( (float) (0x16c * 7) + (float) 0x16d )/ 8.0;
-	 *   (Remember the old trick with +1 for all the timer values ? )
+	 *            1
+	 *  => F = -------
+	 *            Tc
 	 * 
+	 *  However that gave a small deviation from what the STC ISP tool says. 
+	 *  So let's do a little doublechecking:
+	 *
+	 *  STC ISP Tool reports 12.03912 Mhz
+	 *  Logical Analyzer dump reports:
+	 *
+	 *  0x16b 0x16b 0x16b 0x16b 0x16b 0x16b 0x16b 0x16c
+	 *
+	 *  Now let's convert these to float and take the average
+	 *
+	 *  float avg = ( (float) (0x16c * 7) + (float) 0x16d )/ 8.0;
+	 *  (Remember the old trick with +1 for all the timer values ? )
+	 *
 	 *  And that's 364.125000
 	 *
-	 *                 19200 * 364.125
-	 * 12.03912 =    ------------------
-	 *                     alpha    
+	 *     1             n * 1000000
+	 *  ----------  = -----------------------
+	 *  12.03912        19200 * 364.125 * 12
 	 *
-	 * So alpha is 580706.8955206028
-	 * 
-	 * Not the very best way do do this stuff, but it WORKS. And takes in 
-	 * account any value preprocessing they might have done the loader. 
-	 * And gives more or less accurate results. 
+	 * That effectively gives us n as 6.968482746247234
+	 * Which is quite close to 7. 
+	 * With a ~0.03 deviation. While now I used 6.97 as a 
+	 * coefficient to match the behavior of the STC ISP tool, but 
+	 * you must understand, that the error here is mostly composed of:
+	 *
+	 * The deviation of your serial clock 
+	 * In case of pl2303 - it might be the baudrate prescaler deviation 
+	 * and quartz crystal frequency deviation. The one that pl2303 uses.
+	 *
+	 * We can get better results here by using a high-precision crystal with
+	 * pl2303 and throwing up a good set of measurements. 
+	 * But honestly, do you need such a precision ?
 	 * 
 	 */
 
 
-	float T = (ALPHA / ((float) baudrate * avg ) );
+	float T = (6.97 * 1000000 / ((float) baudrate * avg * 12 ) );
 	float freq  = 1.0/T ; 
 	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
 
