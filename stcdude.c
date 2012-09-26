@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,6 +46,15 @@ int main(int argc, char* argv[]) {
 	int hspeed = 1200;
 	lua_State* L = lua_open();
 	luaL_openlibs(L);
+
+	struct winsize w;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	
+	printf ("lines %d\n", w.ws_row);
+	printf ("columns %d\n", w.ws_col);
+
+
+	
 
 	while ((opt = getopt(argc, argv, "ib:d:mp:lb:w:")) != -1) {
 		switch (opt) {
@@ -135,7 +145,7 @@ int main(int argc, char* argv[]) {
        		start_pulsing(us->fd, 145000, pulsechar, 2); 
 		packet = fetch_packet(us->fd);
 		stop_pulsing();
-		parse_info_packet(L, packet, speed);
+		parse_info_packet(L, packet, hspeed);
 		break;
 	case ACTION_MON:
 		packet = fetch_packet(us->fd);
@@ -148,7 +158,7 @@ int main(int argc, char* argv[]) {
        		start_pulsing(us->fd, 145000, pulsechar, 2); 
 		packet = fetch_packet(us->fd);
 		stop_pulsing();
-		struct mcuinfo* minf = parse_info_packet(L, packet, speed);
+		struct mcuinfo* minf = parse_info_packet(L, packet, hspeed);
 		printf("Asking mcu for a magic byte...\n");
 		write(us->fd, askformagic, ARRAY_SIZE(askformagic));
 		packet = fetch_packet(us->fd);
