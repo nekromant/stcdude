@@ -62,6 +62,7 @@ block_read(int fd, char* buf, int sz)
 //int uart_init(char* port, tcflag_t cfl, tcflag_t ifl)
 int uart_init(struct uart_settings_t* us)
 {
+	if (us->fd > 0) close(us->fd);
 	int fd = open(us->port, O_RDWR | O_NOCTTY | O_DSYNC | O_APPEND);
 	if (fd <0) {
 		fprintf(stderr, "I failed to open port %s\n", us->port);

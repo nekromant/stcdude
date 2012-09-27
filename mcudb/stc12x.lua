@@ -1,3 +1,22 @@
+-- Example only, for parser tests
+opts = {
+   {
+      name = "Clock Source",
+      bytes = { 1 , 2 , 3 }, -- byte numbers in payload
+      mask = {0xff, 0xff, 0xff }, -- mask out effective bits
+      values = { 
+	 { 
+	    name = "On-Chip oscillator",
+	    value = {0xfa, 0xfb, 0xfc},
+	 },
+	 { 
+	    name = "External Crystal",
+	    value = {0xfd, 0xfd, 0xfd},
+	 },
+      }
+   },
+}
+
 mcudb = {
     {
       descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\
