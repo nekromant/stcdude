@@ -28,11 +28,11 @@ void report_errors(lua_State *L, int status) {
 lua_State* mcudb_open(lua_State* L, char* file)
 {
 	CHECK();
-	printf("Loading mcudb %s\n", file);
+	printf("Loading lua script: %s\n", file);
 	int s = luaL_loadfile(L, file);
-	printf("Done with result %d\n", s);
 	if ( s==0 ) {
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);
+		if (s!=0) report_errors(L, s);
 	}
 	report_errors(L, s);
 	CHECK();
@@ -53,7 +53,6 @@ void print_mcuinfo(struct mcuinfo *mi) {
 		printf(mi->descr);
 	}
 }
-
 
 struct mcuinfo* mcudb_query_magic(void* L, char* magic) {
 	CHECK();
@@ -100,8 +99,8 @@ struct mcuinfo* mcudb_query_magic(void* L, char* magic) {
 		sscanf(tmp,"0x%X",&mi->xramsz);
 	}
 	/* TODO: Parse tested ops here */
-	
 	lua_pop(L,1);
+	
 	CHECK();
 	return mi;
 }

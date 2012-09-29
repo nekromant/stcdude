@@ -17,6 +17,15 @@ opts = {
    },
 }
 
+handshake = {
+   
+}
+
+packets = {
+   askmagicbyte = {0x50, 0x7, 0x0, 0x36, 0x1, 0xd1, 0x7e},
+
+}
+
 mcudb = {
     {
       descr="	8051-based microcontroller with 1T(1-clock) High-Speed Core,\

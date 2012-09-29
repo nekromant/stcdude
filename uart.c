@@ -23,10 +23,8 @@
 	fprintf(stderr, text, __VA_ARGS__);	\
 			exit(code);
 
-struct uart_settings_t* stc_uart_settings(char* port, int speed) {
-	struct uart_settings_t* s = calloc(1,sizeof(struct uart_settings_t));
-	s->port=port;
-	printf("Using %s @ %d\n", s->port, speed);
+void stc_uart_reconf(struct uart_settings_t* s, int speed) {
+	s->cfl=0;
 	switch(speed) {
 		MAPSPEED(230400);
 		MAPSPEED(115200);
@@ -41,10 +39,18 @@ struct uart_settings_t* stc_uart_settings(char* port, int speed) {
 		FAULT(1,"The requested speed (%d) doesn't seem to be valid.\n", speed);
 	}
 	s->cfl|=CS8;
-	int bits=8;
 	s->cfl|=PARENB;
+}
+
+struct uart_settings_t* stc_uart_settings(char* port, int speed) {
+	struct uart_settings_t* s = calloc(1,sizeof(struct uart_settings_t));
+	s->port=port;
+	printf("Using %s @ %d\n", s->port, speed);
+	stc_uart_reconf(s,speed);
+	s->fd=-1;
 	return s;
 }
+
 
 
 static struct termios oldtio,newtio;
@@ -62,14 +68,20 @@ block_read(int fd, char* buf, int sz)
 //int uart_init(char* port, tcflag_t cfl, tcflag_t ifl)
 int uart_init(struct uart_settings_t* us)
 {
-	if (us->fd > 0) close(us->fd);
-	int fd = open(us->port, O_RDWR | O_NOCTTY | O_DSYNC | O_APPEND);
-	if (fd <0) {
-		fprintf(stderr, "I failed to open port %s\n", us->port);
-		perror("The error is ");
-		return -EIO;
+	
+	tcdrain(us->fd);
+	tcflush(us->fd, TCOFLUSH);
+	if (us->fd<0) {
+		int fd = open(us->port, O_RDWR | O_NOCTTY );
+		fcntl(fd, F_SETFL, 0);
+		if (fd <0) {
+			fprintf(stderr, "I failed to open port %s\n", us->port);
+			perror("The error is ");
+			return -EIO;
+		}
+		us->fd=fd;
 	}
-	tcgetattr(fd,&oldtio); /* save current port settings */
+	tcgetattr(us->fd,&oldtio); /* save current port settings */
 	bzero(&newtio, sizeof(newtio));
 	cfmakeraw(&newtio);
 	newtio.c_cflag =  us->cfl | CLOCAL | CREAD;
@@ -79,9 +91,8 @@ int uart_init(struct uart_settings_t* us)
 	newtio.c_lflag = 0;
 	newtio.c_cc[VTIME]    = 0; 
 	newtio.c_cc[VMIN]     = 1; 
-	tcflush(fd, TCIFLUSH);
-	tcsetattr(fd,TCSANOW,&newtio);
-	us->fd=fd;
-	return fd;
+	tcdrain(us->fd);
+	tcsetattr(us->fd,TCSANOW,&newtio);
+	return us->fd;
 }
 

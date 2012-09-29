@@ -17,7 +17,8 @@ enum {
 
 struct packet {
 	unsigned short size;
-	char* data;
+	unsigned char* data;
+	unsigned char* payload;
 };
 
 struct mcuinfo {
@@ -28,6 +29,15 @@ struct mcuinfo {
 	size_t iromsz;
 	int speed;
 	char* descr;
+};
+
+enum {
+	TESTED_INFO_GET,
+	TESTED_INFO_SET,
+	TESTED_FLASH_READ,
+	TESTED_FLASH_WRITE,
+	TESTED_EEPROM_READ,
+	TESTED_EEPROM_WRITE,
 };
 
 #define DUMP_PACKETS
@@ -46,9 +56,14 @@ struct mcuinfo {
 
 
 struct mcuinfo* mcudb_query_magic(void* L, char magic[2]);
+
 /* Creates an uart settings structure suitable for ISP */
 struct uart_settings_t* stc_uart_settings(char* port, int speed);
-/* opens up the port */
+
+/* On-the-fly speed change for port */
+void stc_uart_speedchange(struct uart_settings_t* us, int speed);
+
+/* opens up the port, if needed or reinits with new speed */
 int uart_init(struct uart_settings_t* us);
 
 /* Start pulsing with data on the descriptor */
@@ -58,5 +73,5 @@ void start_pulsing(int fd, int delay, char* data, size_t datasz);
 void stop_pulsing();
 
 #define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
-
+#define PACKED_SIZE(len) (len+8)
 #endif

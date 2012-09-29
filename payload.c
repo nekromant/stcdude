@@ -26,19 +26,19 @@ return sum;
 }
 
 
-char* pack_paylod(char* payload, int len, char* dir) {
-	char* packet = malloc(len+8);
+char* pack_payload(char* payload, int len, char dir) {
+	char* packet = malloc(PACKED_SIZE(len));
 	packet[0]=0x46;
 	packet[1]=0xB9;
 	packet[2]=dir;
-	unsigned short llen = len+2; /* Account for dir byte and stop byte */
+	unsigned short llen = len+6; /* Account for dir byte and stop byte */
 	/* 8051 is BIG endian */
 	packet[3]=(char) ((llen >>8) & 0xff);
 	packet[4]=(char) (llen & 0xff);
 	memcpy(&packet[5], payload, len);
-	unsigned short sum = byte_sum(payload, len);
-	char* csum = packet[5+len];
-	csum[0] = (char) ((sum >>8) & 0xff);
+	unsigned short sum = byte_sum(&packet[2], len+3);
+	char* csum = &packet[5+len];
+	csum[0] = (char) ((sum >> 8 ) & 0xff);
 	csum[1] = (char) ((sum) & 0xff);
 	csum[2] = 0x16; 
 	return packet;
@@ -59,7 +59,6 @@ struct packet* fetch_packet(int fd) {
 	unsigned char tmp[128];
 	do {
 		read(fd,tmp,1);
-		//	printf("!\n");
 	} while (tmp[0] != START_BYTE0);
 	
 	/* We got the start marker, yappee! */
@@ -78,8 +77,9 @@ struct packet* fetch_packet(int fd) {
 	printf("Packet is expected to be %hd bytes long\n", len);
 	struct packet *pck = malloc(sizeof(struct packet));
 	char* data = malloc((int)len+3);
+	pck->payload = &data[3];
 	pck->data = data;
-	pck->size = len;
+	pck->size = len-6;
 	memcpy(data,&tmp[2],3);
 	block_read(fd,&data[3],(int)len-3);
 	unsigned short sum = byte_sum(data, len-3);

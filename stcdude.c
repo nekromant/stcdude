@@ -10,6 +10,8 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
+static struct uart_settings_t* us;
+
 void usage(char* nm){
 	printf("WARNING: This tool is in no way affiliated with STC MCU Limited. \n");
 	printf("WARNING: Those guys even keep the protocol closed \n");
@@ -33,6 +35,63 @@ void usage(char* nm){
 	printf("GPLv3 or above. See COPYING for details\n");
 }
 
+#define die(message) { printf(message); exit(EXIT_FAILURE); }
+
+int l_send_packet(lua_State* L) {
+	int argc = lua_gettop(L);
+	if (argc!=1)
+		die("Incorrect number of args to send_packet\n");
+	const char* payload = lua_tostring(L,1);
+	char scbuf[3];
+	printf("Sending out: %s\n", payload);
+	scbuf[2]=0x0;
+	int len = strlen(payload)/2;
+	char* tmp = malloc(len);
+	int i;
+	for (i=0;i<len; i++)
+	{
+		strncpy(scbuf,&payload[i*2],2);
+		sscanf(scbuf, "%hhx",&tmp[i]);
+	}
+	char* packet = pack_payload(tmp, len, HOST2MCU);
+	write(us->fd, packet, PACKED_SIZE(len));
+	usleep(200000); /* FixMe: Find a better way to flush the data */
+	free(tmp);
+	free(packet);
+	return 0;
+}
+
+int l_get_packet(lua_State* L) {
+	struct packet* packet;
+	packet = fetch_packet(us->fd);
+	printf("Got %hd bytes\n ", packet->size);
+	int i;
+	lua_newtable(L);
+	for (i=0; i<packet->size; i++) {
+		   lua_pushnumber(L, i);
+		   lua_pushnumber(L, (int) packet->payload[i]);
+		   lua_settable(L, -3);
+	}
+		
+	return 1; /* return the table with bytes */
+}
+
+int l_set_baud(lua_State *L) {
+	int argc = lua_gettop(L);
+	if (argc!=1)
+		die("Incorrect number of args to set_baud\n");
+	int newbaud = lua_tonumber(L,1);
+	printf("Baudrate switch to %d\n", newbaud);
+	stc_uart_reconf(us, newbaud);
+	uart_init(us);
+	return 0;
+}
+
+void register_luastuff(lua_State* L) {
+	lua_register(L, "send_packet", l_send_packet);
+	lua_register(L, "get_packet", l_get_packet);
+	lua_register(L, "set_baud", l_set_baud);
+}
 
 
 int main(int argc, char* argv[]) {
@@ -41,20 +100,18 @@ int main(int argc, char* argv[]) {
 	int action = ACTION_NONE;
 	char* mcudb = "./mcudb/stc10fx.lua";
 	char* port = "/dev/ttyUSB0";
+	char* scenario = "default.lua";
 	char* filename = "null";
 	int uspeed = 19200;
 	int hspeed = 1200;
 	lua_State* L = lua_open();
 	luaL_openlibs(L);
-
+	register_luastuff(L);
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	
 	printf ("lines %d\n", w.ws_row);
 	printf ("columns %d\n", w.ws_col);
-
-
-	
 
 	while ((opt = getopt(argc, argv, "ib:d:mp:lb:w:")) != -1) {
 		switch (opt) {
@@ -110,32 +167,14 @@ int main(int argc, char* argv[]) {
 
 
 
-	struct uart_settings_t* us = stc_uart_settings(port, hspeed);
+	us = stc_uart_settings(port, hspeed);
 	if (uart_init(us)<0) {
 		exit(EXIT_FAILURE);
 	}
 	
 	printf("fd is %d\n", us->fd );
 	char pulsechar[] = { 0x7f, 0x7f };
-	char askformagic[] = {
-		0x46,
-		0xB9,
-		0x6A,
-		0x00,
-		0x0D,
-		0x50,
-	
-		0x07,
-		0x00,
-		0x36,
-		0x01,
-	
-		0xD1, /* magic      */
-		0x70, /* byte from mcu!11 */
-		0x02,
-		0x46,
-		0x16,
-	};
+
 	
 	struct packet* packet;
 	switch (action)
@@ -148,9 +187,12 @@ int main(int argc, char* argv[]) {
 		parse_info_packet(L, packet, hspeed);
 		break;
 	case ACTION_MON:
-		packet = fetch_packet(us->fd);
-		free(packet->data);
-		free(packet);
+		while (1)
+		{
+			packet = fetch_packet(us->fd);
+			free(packet->data);
+			free(packet);
+		}
 		break;
 	case ACTION_DOWN:
 		/* Draft implementation, leaks memory, for testing only */
@@ -159,10 +201,8 @@ int main(int argc, char* argv[]) {
 		packet = fetch_packet(us->fd);
 		stop_pulsing();
 		struct mcuinfo* minf = parse_info_packet(L, packet, hspeed);
-		printf("Asking mcu for a magic byte...\n");
-		write(us->fd, askformagic, ARRAY_SIZE(askformagic));
-		packet = fetch_packet(us->fd);
-		
+		printf("Running io scenario...\n");
+		mcudb_open(L, scenario);
 		break;
 	}
 }

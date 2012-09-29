@@ -1,9 +1,12 @@
+mcu = {}
 function get_mcu_by_magic(magic)
    -- print("Looking for magic "..magic)
-   for n,mcu in pairs(mcudb) do
-      if (magic == mcu['magic']) then
+   for n,m in pairs(mcudb) do
+      if (magic == m['magic']) then
 --	 print("Found ".. mcu['name'].." in database");
-	 return mcu
+	 -- We also set mcu as global
+	 mcu = m
+	 return m
       end
    end
 end
