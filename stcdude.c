@@ -5,12 +5,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
+#include <sys/stat.h>
 #include "uart.h"
 #include "stcdude.h"
 #include "lualib.h"
 #include "lauxlib.h"
 
 static struct uart_settings_t* us;
+struct mcuinfo* minf;
 
 void usage(char* nm){
 	printf("WARNING: This tool is in no way affiliated with STC MCU Limited. \n");
@@ -87,10 +89,59 @@ int l_set_baud(lua_State *L) {
 	return 0;
 }
 
+
+
+static void display_progressbar(int max, int value){
+	int percent = 60 - value * 60 / max;
+	int i;
+	
+	printf("\r %d %% done | ", percent);
+	for (i=0; i<percent; i++)
+		printf("#");
+	fflush(stdout);
+}
+
+
+int l_send_file(lua_State *L) {
+	int argc = lua_gettop(L);
+	if (argc!=2)
+		die("Incorrect number of args to set_baud\n");
+	char* filename = lua_tostring(L,1);
+	int chunksize = lua_tonumber(L,128);
+	
+	FILE* fd = fopen(filename, "r");
+	struct stat inf;
+	if (0 != stat(filename,&inf)) {
+		perror("stat failed: ");
+		die("");
+	}
+	if (fd<0){
+		perror("couldn't open file:");
+		die("");
+	}
+	unsigned int sz = (unsigned int)inf.st_size;
+	if (minf->iromsz < sz) {
+		printf("File too big to fit in flash, truncating");
+		sz = minf->iromsz+1;
+	}
+	printf("Downloading %s (%d bytes)\n", filename, sz);
+	unsigned int maxsz = sz;
+//	unsigned short sz = PACKED_SIZE();
+//	char* tmp=calloc(1,chunksize+8);
+	
+//	char* data=&tmp[8];
+	
+	while (sz) {
+		
+	}
+	
+}
+
 void register_luastuff(lua_State* L) {
 	lua_register(L, "send_packet", l_send_packet);
 	lua_register(L, "get_packet", l_get_packet);
 	lua_register(L, "set_baud", l_set_baud);
+	lua_register(L, "send_file", l_send_file);
 }
 
 
@@ -200,7 +251,7 @@ int main(int argc, char* argv[]) {
        		start_pulsing(us->fd, 145000, pulsechar, 2); 
 		packet = fetch_packet(us->fd);
 		stop_pulsing();
-		struct mcuinfo* minf = parse_info_packet(L, packet, hspeed);
+		minf = parse_info_packet(L, packet, hspeed);
 		printf("Running io scenario...\n");
 		mcudb_open(L, scenario);
 		break;

@@ -74,4 +74,7 @@ void stop_pulsing();
 
 #define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #define PACKED_SIZE(len) (len+8)
+#define HIGH_BYTE(s) (char) ((s >> 8 ) & 0xff);
+#define LOW_BYTE(s) (char) ((s ) & 0xff);
+
 #endif
