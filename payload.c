@@ -49,8 +49,7 @@ void dump_packet(char* packet, int len) {
 	printf("-----8<----- ");
 	for (i=0; i<len; i++) {
 		if (0 == (i % 8)) printf("\n"); 
-		printf(" 0x%2hhx ", packet[i]);
-		
+		printf("%2hhX ", packet[i]);
 	}
 	printf("\n-----8<----- \n ");
 }
@@ -74,7 +73,6 @@ struct packet* fetch_packet(int fd) {
 	unsigned short len=0; 
 	len |= (unsigned short) tmp[3]<<8;
 	len |= (unsigned short) tmp[4];
-	printf("Packet is expected to be %hd bytes long\n", len);
 	struct packet *pck = malloc(sizeof(struct packet));
 	char* data = malloc((int)len+3);
 	pck->payload = &data[3];
@@ -244,6 +242,10 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 
 	float freq = (((float) baudrate * avg * 12 ) / (6.97 * 1000000) );
 	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
+	printf("Bootloader version: %hhx.%hhx%c\n", 
+		(inf->ldr_vnumber & 0xf0) >> 4,
+		inf->ldr_vnumber & 0xf,
+		inf->ldr_vchar );
 	inf->len = reverse_bytes(inf->len);
 /*
 	printf("Dumping interesting bytes...\n");
@@ -256,4 +258,10 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	printf("---8<---");
 */
 	return minf;
+}
+
+
+void free_packet(struct packet* pck) {
+	free(pck->data);
+	free(pck);
 }

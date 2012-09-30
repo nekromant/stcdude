@@ -45,7 +45,6 @@ int l_send_packet(lua_State* L) {
 		die("Incorrect number of args to send_packet\n");
 	const char* payload = lua_tostring(L,1);
 	char scbuf[3];
-	printf("Sending out: %s\n", payload);
 	scbuf[2]=0x0;
 	int len = strlen(payload)/2;
 	char* tmp = malloc(len);
@@ -57,6 +56,7 @@ int l_send_packet(lua_State* L) {
 	}
 	char* packet = pack_payload(tmp, len, HOST2MCU);
 	write(us->fd, packet, PACKED_SIZE(len));
+	//dl = PACKED_SIZE(len) * 
 	usleep(200000); /* FixMe: Find a better way to flush the data */
 	free(tmp);
 	free(packet);
@@ -92,11 +92,12 @@ int l_set_baud(lua_State *L) {
 
 
 static void display_progressbar(int max, int value){
-	int percent = 60 - value * 60 / max;
+	int percent = 100 - value * 100 / max;
+	int bars = 60 - value * 60 / max;
 	int i;
 	
 	printf("\r %d %% done | ", percent);
-	for (i=0; i<percent; i++)
+	for (i=0; i<bars; i++)
 		printf("#");
 	fflush(stdout);
 }
@@ -107,7 +108,7 @@ int l_send_file(lua_State *L) {
 	if (argc!=2)
 		die("Incorrect number of args to set_baud\n");
 	char* filename = lua_tostring(L,1);
-	int chunksize = lua_tonumber(L,128);
+	int chunksize = lua_tonumber(L,2);
 	
 	FILE* fd = fopen(filename, "r");
 	struct stat inf;
@@ -126,14 +127,47 @@ int l_send_file(lua_State *L) {
 	}
 	printf("Downloading %s (%d bytes)\n", filename, sz);
 	unsigned int maxsz = sz;
-//	unsigned short sz = PACKED_SIZE();
-//	char* tmp=calloc(1,chunksize+8);
-	
-//	char* data=&tmp[8];
-	
+	//unsigned short sz = PACKED_SIZE(chunksize+7);
+	/* We add a few bytes.
+	   type of packet? 0x00
+	   0x0 0x0 
+	   2 bytes, offset to write at
+	   2 bytes, size to write
+	 */
+	char* tmp = calloc(1, chunksize+7);
+	int len;
+	unsigned short offset=0;
+	/* Since chunksize is fixed */
+	tmp[5]=HIGH_BYTE((unsigned short) chunksize);
+	tmp[6]=LOW_BYTE((unsigned short) chunksize);
+	struct packet* response;
+	struct write_response *rsp;
+	unsigned short crc; 
 	while (sz) {
-		
+		len = fread(&tmp[7], 1, chunksize, fd);
+		crc = byte_sum(&tmp[7], chunksize);
+		crc = crc & 0x00ff; /* We get a shorted, one byte crc */ 
+		tmp[3]=HIGH_BYTE(offset);
+		tmp[4]=LOW_BYTE(offset);		
+		char* packet = pack_payload(tmp,chunksize+7, HOST2MCU);
+		write(us->fd, packet, PACKED_SIZE(chunksize+7));
+		do_dump_packet(packet,PACKED_SIZE(chunksize+7));
+		free(packet);
+		response = fetch_packet(us->fd);
+		rsp = response->payload;
+		if (rsp->errcode !=0 )
+			fprintf(stderr, "Warning, mcu reports error @0x%hx: %hhx\n", offset, rsp->errcode);
+		if (rsp->crc != (unsigned char) crc )
+			fprintf(stderr, "Warning, crc error @0x%hx: %hhx vs %hhx\n", 
+				offset, 
+				rsp->crc, 
+				(unsigned char) crc);
+		do_dump_packet(response->payload, response->size);
+		sz-= len;
+		offset+=len;
+		display_progressbar(maxsz,sz);	
 	}
+	printf(" | \n");
 	
 }
 

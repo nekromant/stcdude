@@ -1,3 +1,4 @@
+#define _GNU_SOURCE 1 /* POSIX compliant source */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +9,6 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <stdio.h>
-#define _POSIX_SOURCE 1 /* POSIX compliant source */
 #include <errno.h>
 #include <string.h>
 #include "uart.h"
@@ -72,7 +72,7 @@ int uart_init(struct uart_settings_t* us)
 	tcdrain(us->fd);
 	tcflush(us->fd, TCOFLUSH);
 	if (us->fd<0) {
-		int fd = open(us->port, O_RDWR | O_NOCTTY );
+		int fd = open(us->port, O_RDWR | O_NOCTTY  );
 		fcntl(fd, F_SETFL, 0);
 		if (fd <0) {
 			fprintf(stderr, "I failed to open port %s\n", us->port);
@@ -92,7 +92,7 @@ int uart_init(struct uart_settings_t* us)
 	newtio.c_cc[VTIME]    = 0; 
 	newtio.c_cc[VMIN]     = 1; 
 	tcdrain(us->fd);
-	tcsetattr(us->fd,TCSANOW,&newtio);
+	tcsetattr(us->fd, TCSADRAIN, &newtio);
 	return us->fd;
 }
 

@@ -19,6 +19,7 @@ function magicbyte()
    end
 end
 
+--TODO: We need baudrate calculation routines.
 function baudswitch()
    print("Performing baudswitch dance")
    send_packet("8F"..setbaud.."82");
@@ -43,11 +44,14 @@ function erase_flash()
    dump_response(response)
 end
 
+magicbyte()
+baudswitch()
+erase_flash()
 send_file("blink.bin", 128)
 
---magicbyte()
+--
 --baudswitch()
---erase_flash()
+--
 
 
 

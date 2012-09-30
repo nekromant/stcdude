@@ -19,7 +19,7 @@ struct packet {
 	unsigned short size;
 	unsigned char* data;
 	unsigned char* payload;
-};
+} ;
 
 struct mcuinfo {
 	char* name;
@@ -29,7 +29,7 @@ struct mcuinfo {
 	size_t iromsz;
 	int speed;
 	char* descr;
-};
+} __attribute__ ((packed));
 
 enum {
 	TESTED_INFO_GET,
@@ -40,7 +40,13 @@ enum {
 	TESTED_EEPROM_WRITE,
 };
 
-#define DUMP_PACKETS
+struct write_response {
+	char errcode;
+	unsigned char crc;
+} __attribute__ ((packed));
+
+//#define DUMP_PACKETS
+
 #ifdef DUMP_PACKETS
 #define do_dump_packet(pck, len) dump_packet(pck,len)
 #else
@@ -76,5 +82,7 @@ void stop_pulsing();
 #define PACKED_SIZE(len) (len+8)
 #define HIGH_BYTE(s) (char) ((s >> 8 ) & 0xff);
 #define LOW_BYTE(s) (char) ((s ) & 0xff);
+
+void free_packet(struct packet* pck);
 
 #endif
