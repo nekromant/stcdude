@@ -3,9 +3,8 @@
 
 enum {
 	ACTION_NONE,
-	ACTION_INFO,
 	ACTION_MON, /* Packet monitoring */
-	ACTION_DOWN
+	ACTION_SEQ /* Run sequence from lua */
 };
 
 
@@ -83,6 +82,13 @@ void stop_pulsing();
 #define HIGH_BYTE(s) (char) ((s >> 8 ) & 0xff);
 #define LOW_BYTE(s) (char) ((s ) & 0xff);
 
+
+#define MCUDB_DIR    SCRIPTS_PATH "/mcudb/"
+#define SEQDIR       SCRIPTS_PATH "/seq/"
+#define INITFILE     SCRIPTS_PATH "/init.lua"
+
+
 void free_packet(struct packet* pck);
+extern struct mcuinfo* minf;
 
 #endif

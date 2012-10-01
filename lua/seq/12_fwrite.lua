@@ -1,15 +1,15 @@
+mcu_connect(handshake_speed)
 function dump_response(r)
-   io.write("response: ")
-   for i,j in pairs(r) do
-      io.write(string.format(" %X ",j))
-   end
-   io.write("\n")
+--   io.write("response: ")
+--   for i,j in pairs(r) do
+--      io.write(string.format(" %X ",j))
+--   end
+--   io.write("\n")
 end
 
 askmagicbyte="5007003601"..mcu['magic']
 setbaud="C0F33F1A28" -- 57600
-newbaud=57600
-oldbaud=1200
+
 function magicbyte()
    -- print("Asking for magic byte");
    send_packet(askmagicbyte);
@@ -20,16 +20,18 @@ function magicbyte()
 end
 
 -- TODO: We need baudrate calculation routines.
+-- while now this will only work for 12M crystal
 
+upload_speed=57600
 function baudswitch()
    print("Performing baudswitch dance")
    send_packet("8F"..setbaud.."82");
-   set_baud(newbaud)
+   set_baud(upload_speed)
    mbyte = get_packet();
    dump_response(mbyte);
-   set_baud(oldbaud)
+   set_baud(handshake_speed)
    send_packet("8E"..setbaud);
-   set_baud(newbaud)
+   set_baud(upload_speed)
    mbyte = get_packet();
    dump_response(mbyte);
 end
@@ -45,10 +47,11 @@ function erase_flash()
    dump_response(response)
 end
 
+
 magicbyte()
 baudswitch()
 erase_flash()
-send_file("blink.bin", 128)
+send_file(filename, 128)
 
 --
 --baudswitch()

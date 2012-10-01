@@ -12,32 +12,32 @@
 #include "lauxlib.h"
 
 static struct uart_settings_t* us;
-struct mcuinfo* minf;
 
 void usage(char* nm){
 	printf("WARNING: This tool is in no way affiliated with STC MCU Limited. \n");
 	printf("WARNING: Those guys even keep the protocol closed \n");
 	printf("WARNING: So consider some STM32 for your new project \n");
-	printf("Usage: %s [options] action\n", nm);
+	printf("Usage: %s [options]\n", nm);
 	printf("Valid options are:\n");
 	printf("\t -p /dev/ttyUSB0 \tspecify serial port to use\n");
 	printf("\t -b handshake:upload \tspecify baud rate to use (initial and upload)\n");
-	printf("\t -d database \tspecify mcudb to use\n");
-	printf("Valid actions are:\n");
 	printf("\t -h \tprint this help and exit\n");
-	printf("\t -i \tquery MCU info\n");
-	printf("\t -s infostring \tset MCU info (have a look at the README)\n");
-	printf("\t -w filename.bin \tdownload binary file to flash\n");
-	printf("\t -e filename.bin \tdownload binary file to eeprom\n");
-	printf("\t -W filename.bin \tupload binary file from flash\n");
-	printf("\t -E filename.bin \tupload binary file from eeprom\n");
+	printf("\t -a action \tspecify an action\n");
+	printf("\t -f filename.bin \tUse this data file for io (default - firmware.bin)\n");
+	printf("Valid actions (for -a) are:\n");
+	printf("\t info \t query mcu options\n");
+	printf("\t fwrite \t write file to flash memory\n");
+	printf("\t fread \t read flash memory to file\n");
+	printf("\t ewrite \t write file to eeprom memory\n");
+	printf("\t eread \t read eeprom memory to file\n");
 	printf("This is free software, feel free to redistribute it under the terms\n");
-	printf("Extra developer options:\n");
-	printf("\t -l packet monitoring mode:\n");
 	printf("GPLv3 or above. See COPYING for details\n");
+	printf("Extra developer options:\n");
+	printf("\t -l packet monitoring mode\n");
 }
 
 #define die(message) { printf(message); exit(EXIT_FAILURE); }
+
 
 int l_send_packet(lua_State* L) {
 	int argc = lua_gettop(L);
@@ -66,7 +66,7 @@ int l_send_packet(lua_State* L) {
 int l_get_packet(lua_State* L) {
 	struct packet* packet;
 	packet = fetch_packet(us->fd);
-	printf("Got %hd bytes\n ", packet->size);
+	//printf("Got %hd bytes\n ", packet->size);
 	int i;
 	lua_newtable(L);
 	for (i=0; i<packet->size; i++) {
@@ -96,9 +96,12 @@ static void display_progressbar(int max, int value){
 	int bars = 60 - value * 60 / max;
 	int i;
 	
-	printf("\r %d %% done | ", percent);
+	printf("\r %d %% done | ",  percent);
 	for (i=0; i<bars; i++)
 		printf("#");
+	for (i=bars; i<60; i++)
+		printf(" ");
+	printf("| %d K", (max-value) / 1024);
 	fflush(stdout);
 }
 
@@ -122,7 +125,7 @@ int l_send_file(lua_State *L) {
 	}
 	unsigned int sz = (unsigned int)inf.st_size;
 	if (minf->iromsz < sz) {
-		printf("File too big to fit in flash, truncating");
+		printf("WARNING: File too big to fit in flash, truncating!\n");
 		sz = minf->iromsz+1;
 	}
 	printf("Downloading %s (%d bytes)\n", filename, sz);
@@ -167,8 +170,18 @@ int l_send_file(lua_State *L) {
 		offset+=len;
 		display_progressbar(maxsz,sz);	
 	}
-	printf(" | \n");
+	printf("\n");
 	
+}
+
+static char pulsechar[] = { 0x7f, 0x7f };
+
+int l_mcu_connect(lua_State* L) {
+	start_pulsing(us->fd, 145000, pulsechar, 2); 
+	struct packet *packet = fetch_packet(us->fd);
+	stop_pulsing();
+	int hspeed = lua_tonumber(L,1);
+	parse_info_packet(L, packet, hspeed);	
 }
 
 void register_luastuff(lua_State* L) {
@@ -176,19 +189,20 @@ void register_luastuff(lua_State* L) {
 	lua_register(L, "get_packet", l_get_packet);
 	lua_register(L, "set_baud", l_set_baud);
 	lua_register(L, "send_file", l_send_file);
+	lua_register(L, "mcu_connect", l_mcu_connect);
 }
 
 
 int main(int argc, char* argv[]) {
 	printf("STC ISP Tool. (c) Necromant 2012\n");
 	int opt;
-	int action = ACTION_NONE;
-	char* mcudb = "./mcudb/stc10fx.lua";
+	int action = ACTION_SEQ;
 	char* port = "/dev/ttyUSB0";
 	char* scenario = "default.lua";
 	char* filename = "null";
-	int uspeed = 19200;
+	int uspeed = 57600;
 	int hspeed = 1200;
+	char* seq = "info";
 	lua_State* L = lua_open();
 	luaL_openlibs(L);
 	register_luastuff(L);
@@ -198,40 +212,23 @@ int main(int argc, char* argv[]) {
 	printf ("lines %d\n", w.ws_row);
 	printf ("columns %d\n", w.ws_col);
 
-	while ((opt = getopt(argc, argv, "ib:d:mp:lb:w:")) != -1) {
+	while ((opt = getopt(argc, argv, "b:p:lb:a:f:")) != -1) {
 		switch (opt) {
-		case 'i':
-			action = ACTION_INFO;
-			break;
-		case 'd':
-			mcudb = optarg;
-			printf("Using mcudb file: %s\n", mcudb);
-			break;
 		case 'b':
 			sscanf(optarg, "%d:%d",&hspeed, &uspeed);
 			break;
-		case 't':
-			//nsecs = atoi(optarg);
-			//tfnd = 1;
-			break;
 		case 'p':
 			port = optarg;
-			break;
-		case 'm': /* Dirty hack, remove me later */
-			printf("Demonstrating mcudb magic\n");
-			mcudb_open(L, "./init.lua");
-			mcudb_open(L, mcudb);
-			char magic[] = {0xD2, 0xFA};
-			struct mcuinfo *inf = mcudb_query_magic(L,magic);
-			print_mcuinfo(inf);	
-			exit(1);
 			break;
 		case 'l':
 			printf("Starting to monitor all incoming packets\n");
 			action = ACTION_MON;
 			break;
-		case 'w':
-			action = ACTION_DOWN;
+		case 'a':
+			action = ACTION_SEQ;
+			seq = optarg;
+			break;
+		case 'f':
 			filename = optarg;
 			break;
 		default: /* '?' */
@@ -239,6 +236,23 @@ int main(int argc, char* argv[]) {
 			exit(EXIT_FAILURE);
 		}
 	}
+
+
+	/* All checks passsed, let's rick'n'roll */
+	mcudb_open(L, SCRIPTS_PATH "/init.lua" );
+
+	/* Push a few options to lua */
+	lua_pushstring( L, filename );
+	lua_setglobal( L, "filename" );
+	lua_pushnumber( L, hspeed );
+	lua_setglobal( L, "handshake_speed" );
+	lua_pushnumber( L, uspeed );
+	lua_setglobal( L, "upload_speed" );
+	lua_pushstring( L,  SEQDIR);
+	lua_setglobal( L, "SEQDIR" );
+	lua_pushstring( L,  MCUDB_DIR);
+	lua_setglobal( L, "MCUDBDIR" );
+
 	if (action == ACTION_NONE)
 	{
 		printf("No valid action set, have a quick look at the help\n");
@@ -246,31 +260,15 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	
-	/* All checks passsed, let's rick'n'roll */
-	mcudb_open(L, "./init.lua");
-	mcudb_open(L, mcudb);
-
-
-
 	us = stc_uart_settings(port, hspeed);
 	if (uart_init(us)<0) {
 		exit(EXIT_FAILURE);
 	}
 	
 	printf("fd is %d\n", us->fd );
-	char pulsechar[] = { 0x7f, 0x7f };
-
-	
 	struct packet* packet;
 	switch (action)
 	{
-	case ACTION_INFO:
-		printf("Waiting for an infopacket from MCU...\n");
-       		start_pulsing(us->fd, 145000, pulsechar, 2); 
-		packet = fetch_packet(us->fd);
-		stop_pulsing();
-		parse_info_packet(L, packet, hspeed);
-		break;
 	case ACTION_MON:
 		while (1)
 		{
@@ -279,15 +277,15 @@ int main(int argc, char* argv[]) {
 			free(packet);
 		}
 		break;
-	case ACTION_DOWN:
-		/* Draft implementation, leaks memory, for testing only */
-		printf("\nWaiting for an infopacket from MCU...\n");
-       		start_pulsing(us->fd, 145000, pulsechar, 2); 
-		packet = fetch_packet(us->fd);
-		stop_pulsing();
-		minf = parse_info_packet(L, packet, hspeed);
-		printf("Running io scenario...\n");
-		mcudb_open(L, scenario);
+	case ACTION_SEQ: /* Scripted action */
+		lua_getglobal(L, "run_sequence");  /* function to be called */
+		lua_pushstring(L, seq);  /* prepare parameter */
+		if (lua_pcall(L, 1, 0, 0) != 0)
+		{
+			fprintf(stderr, "error running sequence '%s': %s\n",
+				seq, lua_tostring(L, -1));
+			return 1;
+		}
 		break;
 	}
 }
