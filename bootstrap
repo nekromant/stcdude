@@ -1,0 +1,11 @@
+#!/bin/bash
+doit()
+{
+cd src
+echo stcdude_lua=
+find lua/ -iname "*.lua"|while read line; do
+echo stcdude_lua+=$line
+done
+}
+
+doit > src/datafiles.mk
