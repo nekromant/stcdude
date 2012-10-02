@@ -123,11 +123,8 @@ HOST: Let's commit THESE baudrate settings (via 8E) (7)
 /* data io */
 /* commit new fuses, lock, etc */
 
-A few type 3 packets below
-
-6A000D 50 07003601 D170  024616 
-
-
+I call the shit above an overcomplicated baudrate dance. 
+Whoever invented it should go for the Darwin Awards. 
 Packets of type (5) and (7) are below. We need to make sense of 'em. 
 
 /* These are at 20M quartz */
@@ -152,19 +149,23 @@ Packets of type (5) and (7) are below. We need to make sense of 'em.
 46B96A000D 8F C0E6 3F34 2883 03CA16 28800
 46B96A000D 8E C0E6 3F34 28   034516 <-- Second packet for 28800
 
+46B96A000D 8F 4063 BFFF 2D83   034516 <-- Second packet for 2400
+46B96A000D 8E 4063 BFFF 2D   034516 <-- Second packet for 2400
 
-/* STRUCTURE */ 
+/* Let's look in-depth to the baudrate packets */
 
-46B96A000D - header
+typical payload: 8F C0F3 3F1A 2883
 
 8F - packet type?
-C0 - SCON? If so, selects 9bit variable baudrate mode
-F5 - BRT/TH?
-3F - AUXR?
-16 - TMOD?
+C0 - PCON value, sets SMOD bits. 
+F5 - Sets the actual new baudrate
+3F - WTF??
 28 - WTF??
 82 - WTF??
 
+Notice 3 WTFs above? They screw up things. And not all baudrates
+far from all crystalls work. It looks like some delays for some 
+timers. But what for? If you have any idea, drop me a note
                          
 
 
@@ -195,3 +196,6 @@ F5 - BRT/TH?
 
  0x24  0x3e  0x16  
 
+/* Set options packet */
+
+69 07 00 36 01 D1 7E 

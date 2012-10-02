@@ -172,7 +172,6 @@ psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
-stcdudedir = ${datarootdir}/stcdude
 sysconfdir = ${prefix}/etc
 target_alias = 
 top_build_prefix = ../
@@ -182,6 +181,7 @@ AM_CFLAGS = -DSCRIPTS_PATH='"${datarootdir}/stcdude/lua"'
 stcdude_CPPFLAGS = $(AMCFLAGS)
 stcdude_LDADD = $(LUA_LIBS) -lpthread
 stcdude_SOURCES = stcdude.c uart.c payload.c mcudb.c
+stcdudedir = ${datarootdir}/stcdude
 stcdude_lua = lua/init.lua lua/seq/info.lua lua/seq/12_fwrite.lua \
 	lua/mcudb/stc12x.lua lua/mcudb/stc10fx.lua
 all: all-am

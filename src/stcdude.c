@@ -159,7 +159,13 @@ int l_send_file(lua_State *L) {
 		response = fetch_packet(us->fd);
 		rsp = response->payload;
 		if (rsp->errcode !=0 )
+		{
 			fprintf(stderr, "Warning, mcu reports error @0x%hx: %hhx\n", offset, rsp->errcode);
+			//printf();
+		}else
+		{
+			//tmp[0]
+		}
 		if (rsp->crc != (unsigned char) crc )
 			fprintf(stderr, "Warning, crc error @0x%hx: %hhx vs %hhx\n", 
 				offset, 
@@ -177,7 +183,7 @@ int l_send_file(lua_State *L) {
 static char pulsechar[] = { 0x7f, 0x7f };
 
 int l_mcu_connect(lua_State* L) {
-	start_pulsing(us->fd, 145000, pulsechar, 2); 
+	start_pulsing(us->fd, 50000, pulsechar, 2); 
 	struct packet *packet = fetch_packet(us->fd);
 	stop_pulsing();
 	int hspeed = lua_tonumber(L,1);
@@ -238,9 +244,6 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	/* All checks passsed, let's rick'n'roll */
-	mcudb_open(L, SCRIPTS_PATH "/init.lua" );
-
 	/* Push a few options to lua */
 	lua_pushstring( L, filename );
 	lua_setglobal( L, "filename" );
@@ -252,6 +255,11 @@ int main(int argc, char* argv[]) {
 	lua_setglobal( L, "SEQDIR" );
 	lua_pushstring( L,  MCUDB_DIR);
 	lua_setglobal( L, "MCUDBDIR" );
+
+	/* All checks passsed, let's rick'n'roll */
+	mcudb_open(L, SCRIPTS_PATH "/init.lua" );
+
+
 
 	if (action == ACTION_NONE)
 	{

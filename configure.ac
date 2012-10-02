@@ -37,5 +37,5 @@ AC_ARG_WITH([scripts-path],
   [SCRIPTS_PATH="-DSCRIPTS_DIR='$withval'"])
 
 AC_SUBST([SCRIPTS_PATH])
-AC_SUBST([stcdudedir],@datadir@/stcdude)
+#AC_SUBST([stcdudedir],@datadir@/stcdude)
 AC_OUTPUT
