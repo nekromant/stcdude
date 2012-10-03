@@ -56,8 +56,10 @@ int l_send_packet(lua_State* L) {
 	}
 	char* packet = pack_payload(tmp, len, HOST2MCU);
 	write(us->fd, packet, PACKED_SIZE(len));
-	//dl = PACKED_SIZE(len) * 
-	usleep(200000); /* FixMe: Find a better way to flush the data */
+	tcdrain(us->fd);
+	int delay = PACKED_SIZE(len)*1000000/us->speed*11;
+	printf("Estimated delay: %d\n", delay);
+	usleep(delay);
 	free(tmp);
 	free(packet);
 	return 0;

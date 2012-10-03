@@ -25,6 +25,7 @@
 
 void stc_uart_reconf(struct uart_settings_t* s, int speed) {
 	s->cfl=0;
+	s->speed=speed;
 	switch(speed) {
 		MAPSPEED(230400);
 		MAPSPEED(115200);
