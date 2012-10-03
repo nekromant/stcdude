@@ -1,5 +1,20 @@
-mcudb_files = { "stc10fx.lua", "stc12x.lua" }
-mcu = {}
+
+mcudb_files= { 
+"1.lua", 
+"10.lua", 
+"11.lua", 
+"12.lua", 
+"13.lua", 
+"2.lua", 
+"3.lua", 
+"4.lua", 
+"5.lua", 
+"6.lua", 
+"7.lua", 
+"8.lua", 
+"9.lua", 
+}
+
 
 function get_mcu_by_magic(magic)
    -- print("Looking for magic "..magic)

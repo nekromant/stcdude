@@ -182,8 +182,12 @@ stcdude_CPPFLAGS = $(AMCFLAGS)
 stcdude_LDADD = $(LUA_LIBS) -lpthread
 stcdude_SOURCES = stcdude.c uart.c payload.c mcudb.c
 stcdudedir = ${datarootdir}/stcdude
-stcdude_lua = lua/init.lua lua/seq/info.lua lua/seq/12_fwrite.lua \
-	lua/mcudb/stc12x.lua lua/mcudb/stc10fx.lua
+stcdude_lua = lua/init.lua lua/seq/12_ewrite.lua lua/seq/info.lua \
+	lua/seq/12_fwrite.lua lua/mcudb/7.lua lua/mcudb/9.lua \
+	lua/mcudb/8.lua lua/mcudb/4.lua lua/mcudb/11.lua \
+	lua/mcudb/2.lua lua/mcudb/10.lua lua/mcudb/12.lua \
+	lua/mcudb/6.lua lua/mcudb/3.lua lua/mcudb/13.lua \
+	lua/mcudb/1.lua lua/mcudb/5.lua
 all: all-am
 
 .SUFFIXES:

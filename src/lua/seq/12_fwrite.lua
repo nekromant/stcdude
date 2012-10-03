@@ -54,15 +54,15 @@ end
 --setbaud="C0F3 3F1A 28" -- 57600
 
 
-baudrates = { 115200, 57600, 38400, 28800, 19200, 9600, 4800, 2400, 1200, 300 }
+baudrates = { 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1200, 300 }
 
 function baudswitch()
    crystal = mcu_clock*1000000
    settings = getbaudsettings(upload_speed,crystal);
    print("")
-   print("Performing baudrate dance")
    print("WARNING: Baudrate dance is heavy experimental, sometimes fails");
    print("WARNING: If it doesn't work - try a lower baudrate manually");
+   print("Performing baudrate dance")
    if (settings[4] >= 5) then
       print(upload_speed.." will result in "..settings[4].."% error")
       for n,b in pairs(baudrates) do
@@ -86,6 +86,7 @@ function baudswitch()
    set_baud(upload_speed)
    mbyte = get_packet();
    dump_response(mbyte);
+   print("Baudrate dance succeded")
 end
 
 function erase_flash()
