@@ -1,10 +1,14 @@
 mcu_connect(handshake_speed)
+
+DEBUG=nil
 function dump_response(r)
-   io.write("response: ")
-   for i,j in pairs(r) do
+   if (DEBUG) then
+      io.write("response: ")
+      for i,j in pairs(r) do
       io.write(string.format(" %X ",j))
+      end
+      io.write("\n")
    end
-   io.write("\n")
 end
 
 askmagicbyte="5007003601"..mcu['magic']
@@ -55,6 +59,8 @@ baudrates = { 115200, 57600, 38400, 28800, 19200, 9600, 4800, 2400, 1200, 300 }
 function baudswitch()
    crystal = mcu_clock*1000000
    settings = getbaudsettings(upload_speed,crystal);
+   print("")
+   print("Performing baudrate dance")
    print("WARNING: Baudrate dance is heavy experimental, sometimes fails");
    print("WARNING: If it doesn't work - try a lower baudrate manually");
    if (settings[4] >= 5) then
@@ -70,7 +76,7 @@ function baudswitch()
    end
 --   print("Performing switch to "..upload_speed.." ("..settings[4].."% error)")
    setbaud = settings[1]..settings[2].."3F1628"
-   print("payload: "..setbaud)
+--   print("payload: "..setbaud)
    send_packet("8F"..setbaud.."82");
    set_baud(upload_speed)
    mbyte = get_packet();

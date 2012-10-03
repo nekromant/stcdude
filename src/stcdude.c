@@ -57,8 +57,7 @@ int l_send_packet(lua_State* L) {
 	char* packet = pack_payload(tmp, len, HOST2MCU);
 	write(us->fd, packet, PACKED_SIZE(len));
 	tcdrain(us->fd);
-	int delay = PACKED_SIZE(len)*1000000/us->speed*11;
-	printf("Estimated delay: %d\n", delay);
+	int delay = PACKED_SIZE(len)*1000000/us->speed*11; /* account for 11 bits */
 	usleep(delay);
 	free(tmp);
 	free(packet);
@@ -85,7 +84,7 @@ int l_set_baud(lua_State *L) {
 	if (argc!=1)
 		die("Incorrect number of args to set_baud\n");
 	int newbaud = lua_tonumber(L,1);
-	printf("Baudrate switch to %d\n", newbaud);
+//	printf("Baudrate switch to %d\n", newbaud);
 	stc_uart_reconf(us, newbaud);
 	uart_init(us);
 	return 0;
