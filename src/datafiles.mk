@@ -3,6 +3,7 @@ stcdude_lua+=lua/init.lua
 stcdude_lua+=lua/seq/12_ewrite.lua
 stcdude_lua+=lua/seq/info.lua
 stcdude_lua+=lua/seq/12_fwrite.lua
+stcdude_lua+=lua/seq/dtest.lua
 stcdude_lua+=lua/mcudb/7.lua
 stcdude_lua+=lua/mcudb/9.lua
 stcdude_lua+=lua/mcudb/8.lua

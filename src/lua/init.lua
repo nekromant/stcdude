@@ -39,6 +39,7 @@ end
 
 sequences = {
    wflash = "12_fwrite",
+   dtest = "dtest",
 }
 
 
