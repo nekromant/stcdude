@@ -240,7 +240,7 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	 * 
 	 */
 
-	float freq = (((float) baudrate * avg * 12 ) / (6.97 * 1000000) );
+	float freq = (((float) baudrate * avg * 12 ) / (6.968482746247234 * 1000000) );
 	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
 	lua_pushnumber(L,freq);
 	lua_setglobal(L,"mcu_clock");

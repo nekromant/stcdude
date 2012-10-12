@@ -24,7 +24,6 @@ function magicbyte()
 end
 
 
--- upload_speed=57600
 -- PCON register values for smod 0 and 1
 smod = { { 2, "C0"}, {1, "40"} }
 
@@ -54,16 +53,32 @@ end
 --setbaud="C0F3 3F1A 28" -- 57600
 
 
+
+iap_timer = { 
+   { 30, "80" },
+   { 24, "81" },
+   { 20, "82" },
+   { 12, "83" },
+   { 6,  "84" },
+   { 3,  "85" },
+   { 2,  "86" },
+   { 1,  "87" },
+}
+
 baudrates = { 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1200, 300 }
 
 function baudswitch()
    crystal = mcu_clock*1000000
+   -- Let's pick a suitable iap timer value
+   for i,j in pairs(iap_timer) do
+      if mcu_clock>j[1] then
+	 iap=j;
+	 break;
+      end
+   end
    settings = getbaudsettings(upload_speed,crystal);
-   print("")
-   print("WARNING: Baudrate dance is heavy experimental, sometimes fails");
-   print("WARNING: If it doesn't work - try a lower baudrate manually");
    print("Performing baudrate dance")
-   if (settings[4] >= 5) then
+   if (settings[4] >= 7) then
       print(upload_speed.." will result in "..settings[4].."% error")
       for n,b in pairs(baudrates) do
 	 if (b < upload_speed) then
@@ -74,10 +89,14 @@ function baudswitch()
       end
       return
    end
---   print("Performing switch to "..upload_speed.." ("..settings[4].."% error)")
-   setbaud = settings[1]..settings[2].."3F1628"
---   print("payload: "..setbaud)
-   send_packet("8F"..setbaud.."82");
+   tmp = tonumber("0x"..settings[1]);
+   check=0xff-0xc0;
+   check = string.format("%X",check)
+   tmp = tonumber("0x"..settings[2]);   
+   rcheck = 2*(0x100 - tmp)
+   rcheck = string.format("%X",rcheck)
+   setbaud = settings[1]..settings[2]..check..rcheck.."28"   
+   send_packet("8F"..setbaud..iap[2]);
    set_baud(upload_speed)
    mbyte = get_packet();
    dump_response(mbyte);
@@ -86,7 +105,6 @@ function baudswitch()
    set_baud(upload_speed)
    mbyte = get_packet();
    dump_response(mbyte);
-   print("Baudrate dance succeded")
 end
 
 function erase_flash()
@@ -105,10 +123,6 @@ magicbyte()
 baudswitch()
 erase_flash()
 send_file(filename, 128)
-
---
---baudswitch()
---
 
 
 
