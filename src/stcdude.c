@@ -210,7 +210,7 @@ int main(int argc, char* argv[]) {
 	int uspeed = 57600;
 	int hspeed = 1200;
 	char* seq = "info";
-	lua_State* L = lua_open();
+	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	register_luastuff(L);
 	struct winsize w;
