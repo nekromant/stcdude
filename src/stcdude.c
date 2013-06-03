@@ -8,8 +8,8 @@
 #include <sys/stat.h>
 #include "uart.h"
 #include "stcdude.h"
-#include "lualib.h"
-#include "lauxlib.h"
+#include <lualib.h>
+#include <lauxlib.h>
 
 static struct uart_settings_t* us;
 

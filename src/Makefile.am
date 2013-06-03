@@ -1,7 +1,7 @@
 bin_PROGRAMS = stcdude
 
 AM_CFLAGS = -DSCRIPTS_PATH='"@datadir@/stcdude/lua"' 
-stcdude_CPPFLAGS = $(AMCFLAGS)
+stcdude_CPPFLAGS = $(AMCFLAGS) $(LUA_CFLAGS)
 stcdude_LDADD = $(LUA_LIBS) -lpthread
 stcdude_SOURCES = stcdude.c uart.c payload.c mcudb.c
 stcdudedir=@datadir@/stcdude
