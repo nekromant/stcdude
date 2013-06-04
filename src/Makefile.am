@@ -10,5 +10,5 @@ include datafiles.mk
 #v
 install-data-local:
 	for file in $(stcdude_lua); do \
-	$(INSTALL) -D $$file $(stcdudedir)/$$file ;\
+	$(INSTALL) -D $$file $(DESTDIR)/$(stcdudedir)/$$file ;\
 	done	
