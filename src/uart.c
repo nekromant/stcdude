@@ -71,7 +71,6 @@ int uart_init(struct uart_settings_t* us)
 {
 	
 	tcdrain(us->fd);
-	tcflush(us->fd, TCOFLUSH);
 	if (us->fd<0) {
 		int fd = open(us->port, O_RDWR | O_NOCTTY  );
 		fcntl(fd, F_SETFL, 0);

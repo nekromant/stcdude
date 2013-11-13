@@ -19,7 +19,6 @@ mcudb_files= {
 function get_mcu_by_magic(magic)
    -- print("Looking for magic "..magic)
    for j,file in pairs(mcudb_files) do
-      print("Trying mcudb "..file)
       dofile(MCUDBDIR..file)
       for n,m in pairs(mcudb) do
 	 if (magic == m['magic']) then
@@ -44,7 +43,12 @@ sequences = {
 
 
 function run_sequence(seq)
-   print("Running sequence "..seq)
+   if (seq ~= "info" and sequences[seq]==nil) then
+      print("Unknown seq requested: " .. seq)
+      return
+   end
+   
+   print("Power on target MCU at will")
    if (seq ~= 'info') then
       dofile(SEQDIR..sequences[seq]..".lua")
    else

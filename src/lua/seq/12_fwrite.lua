@@ -77,7 +77,6 @@ function baudswitch()
       end
    end
    settings = getbaudsettings(upload_speed,crystal);
-   print("Performing baudrate dance")
    if (settings[4] >= 7) then
       print(upload_speed.." will result in "..settings[4].."% error")
       for n,b in pairs(baudrates) do
@@ -89,6 +88,10 @@ function baudswitch()
       end
       return
    end
+   print("Switching baudrate to "..upload_speed)
+   print("If things hang at this point, try a different baudrate")
+   print("or try -w option")
+
    tmp = tonumber("0x"..settings[1]);
    check=0xff-0xc0;
    check = string.format("%X",check)

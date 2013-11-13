@@ -1,0 +1,73 @@
+Compiling & Installing
+----------------------
+
+You'll need autotools, lua dev packaes, 
+5.1 or 5.2 would do. 
+Then the usual autotools dance:
+
+autoreconf --install --force
+./configure
+make
+sudo make install
+
+
+The serial dongle problem
+--------------------------
+
+It does look like a few serial port dongles do NOT
+properly support tcdrain. e.g. it returns while some 
+bytes are still IN the hardware TX fifo. This is why 
+stock STC ISP software doesn't work with them under wine.
+At all.
+
+Workarounds:
+1. Use the same upload speed as the handshake speed.  
+2. Use -w option. 
+
+stcdude has a workaround for those, -w option adds a delay that
+does the tricks in most cases. This part is tricky in places.
+
+Getting .bin file
+-----------------
+
+Your firmware should be in _binary_ format. 
+You can convert it from intel hex using either hex2bin
+or srecord packages (Whichever you like)
+
+Example for hex2bin:
+	hex2bin input.ihx
+
+Example for srecord:
+	srec_cat -Disable_Sequence_Warnings input.ihx -Intel -output out.bin -Binary
+
+Usage
+------
+
+Getting info:
+
+stcdude -p /dev/ttyUSB0 -b 1200:57600 
+           |                 |   |
+	   | 		     |   |
+	   |		     |	 |- Upload baudrate
+	   |		     |
+	   |		     |-- Handshake speed (higher values my not work)
+	   |
+	   |-Serial port to use
+
+After running this - supply MCU power, and voila.
+
+
+Flashing something:
+
+stcdude -p /dev/ttyUSB0 -b 1200:57600 -a wflash -f firmware.bin
+	   |		     |	 |    	 |         |
+	   |		     |	 |	 |         |- This is the firmware file
+	   |		     |   |       |
+           |                 |   |	 | - we're writing to FLASH
+	   | 		     |   |
+	   |		     |	 |- Upload baudrate
+	   |		     |
+	   |		     |-- Handshake speed (higher values my not work)
+	   |
+	   |-Serial port to use
+	   

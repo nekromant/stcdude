@@ -12,6 +12,7 @@
 #include <lauxlib.h>
 
 static struct uart_settings_t* us;
+static int delay_hack = 0;
 
 void usage(char* nm){
 	printf("WARNING: This tool is in no way affiliated with STC MCU Limited. \n");
@@ -23,13 +24,11 @@ void usage(char* nm){
 	printf("\t -b handshake:upload \tspecify baud rate to use (initial and upload)\n");
 	printf("\t -h \tprint this help and exit\n");
 	printf("\t -a action \tspecify an action\n");
-	printf("\t -f filename.bin \tUse this data file for io (default - firmware.bin)\n");
+	printf("\t -f filename.bin \tSend this file to mcu\n");
+	printf("\t -w \t Workaround broken tcdrain\n");	
 	printf("Valid actions (for -a) are:\n");
 	printf("\t info \t query mcu options\n");
-	printf("\t fwrite \t write file to flash memory\n");
-	printf("\t fread \t read flash memory to file\n");
-	printf("\t ewrite \t write file to eeprom memory\n");
-	printf("\t eread \t read eeprom memory to file\n");
+	printf("\t wflash \t write file to flash memory\n");
 	printf("This is free software, feel free to redistribute it under the terms\n");
 	printf("GPLv3 or above. See COPYING for details\n");
 	printf("Extra developer options:\n");
@@ -56,9 +55,14 @@ int l_send_packet(lua_State* L) {
 	}
 	char* packet = pack_payload(tmp, len, HOST2MCU);
 	write(us->fd, packet, PACKED_SIZE(len));
+	
 	tcdrain(us->fd);
-	int delay = PACKED_SIZE(len)*1000000/us->speed*12; /* account for 11 bits */
-	usleep(delay);
+
+	if (delay_hack) {
+		int delay = PACKED_SIZE(len)*1000000/us->speed*12; /* account for 11 bits */	
+		usleep(delay);
+	}
+		
 	free(tmp);
 	free(packet);
 	return 0;
@@ -84,7 +88,8 @@ int l_set_baud(lua_State *L) {
 	if (argc!=1)
 		die("Incorrect number of args to set_baud\n");
 	int newbaud = lua_tonumber(L,1);
-//	printf("Baudrate switch to %d\n", newbaud);
+	if (us->speed == newbaud)
+		return 0;
 	stc_uart_reconf(us, newbaud);
 	uart_init(us);
 	return 0;
@@ -216,10 +221,7 @@ int main(int argc, char* argv[]) {
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	
-	printf ("lines %d\n", w.ws_row);
-	printf ("columns %d\n", w.ws_col);
-
-	while ((opt = getopt(argc, argv, "b:p:lb:a:f:")) != -1) {
+	while ((opt = getopt(argc, argv, "b:p:lb:a:f:w")) != -1) {
 		switch (opt) {
 		case 'b':
 			sscanf(optarg, "%d:%d",&hspeed, &uspeed);
@@ -238,6 +240,10 @@ int main(int argc, char* argv[]) {
 		case 'f':
 			filename = optarg;
 			break;
+		case 'w':
+			delay_hack = 1;
+			break;
+
 		default: /* '?' */
 			usage(argv[0]);
 			exit(EXIT_FAILURE);
@@ -274,7 +280,6 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	
-	printf("fd is %d\n", us->fd );
 	struct packet* packet;
 	switch (action)
 	{
