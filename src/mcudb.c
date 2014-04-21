@@ -44,13 +44,13 @@ void print_mcuinfo(struct mcuinfo *mi) {
 	printf("MCU DB information\n");
 	printf("Part name:\t %s\n", mi->name);
 	printf("Magic bytes:\t %hhX%hhX\n", mi->magic[0],mi->magic[1]);
-	printf("IRAM size:\t %d (0x%x) bytes\n", mi->iramsz+1, mi->iramsz+1);
-	printf("XRAM size:\t %d (0x%x) bytes\n", mi->xramsz+1, mi->xramsz+1);
-	printf("IROM size:\t %d (0x%x) bytes\n", mi->iromsz+1, mi->iromsz+1);
+	printf("IRAM size:\t %ld (0x%lx) bytes\n", mi->iramsz+1, mi->iramsz+1);
+	printf("XRAM size:\t %ld (0x%lx) bytes\n", mi->xramsz+1, mi->xramsz+1);
+	printf("IROM size:\t %ld (0x%lx) bytes\n", mi->iromsz+1, mi->iromsz+1);
 	printf("Tested ops: FixMe: implement reading of tested ops\n");
 	if (mi->descr) {
 		printf("Description:\n");
-		printf(mi->descr);
+		printf("%s", mi->descr);
 	}
 }
 
@@ -88,15 +88,15 @@ struct mcuinfo* mcudb_query_magic(void* L, char* magic) {
 	}
 	get_str_member(tmp,"iram", lua_pop(L,1); tmp=NULL;);
 	if (tmp) {
-		sscanf(tmp,"0x%X",&mi->iramsz);
+		sscanf(tmp,"0x%zX",&mi->iramsz);
 	}
 	get_str_member(tmp,"irom", lua_pop(L,1); tmp=NULL;);
 	if (tmp) {
-		sscanf(tmp,"0x%X",&mi->iromsz);
+		sscanf(tmp,"0x%zX",&mi->iromsz);
 	}
 	get_str_member(tmp,"xram", lua_pop(L,1); tmp=NULL;);
 	if (tmp) {
-		sscanf(tmp,"0x%X",&mi->xramsz);
+		sscanf(tmp,"0x%zX",&mi->xramsz);
 	}
 	/* TODO: Parse tested ops here */
 	lua_pop(L,1);

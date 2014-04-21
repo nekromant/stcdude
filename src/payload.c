@@ -64,11 +64,14 @@ struct packet* fetch_packet(int fd) {
 	block_read(fd, &tmp[1], 4);
 	
 	if (tmp[1] != START_BYTE1) {
-		printf("Warning! Second byte looks weird: 0x%hhx vs 0x%hhx\n", tmp[1], START_BYTE1);
+		printf("Warning! Second byte looks weird: 0x%hhx vs 0x%x\n",
+			tmp[1], START_BYTE1);
 	}
 
 	if (tmp[2] != MCU2HOST){
-		printf("Warning! Direction byte incorrect: 0x%hhx vs 0x%hhx\n", tmp[2], MCU2HOST);      }
+		printf("Warning! Direction byte incorrect: 0x%hhx vs 0x%x\n",
+			tmp[2], MCU2HOST);
+	}
 	
 	unsigned short len=0; 
 	len |= (unsigned short) tmp[3]<<8;
@@ -244,7 +247,7 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
 	lua_pushnumber(L,freq);
 	lua_setglobal(L,"mcu_clock");
-	printf("Bootloader version: %hhx.%hhx%c\n", 
+	printf("Bootloader version: %x.%x%c\n",
 		(inf->ldr_vnumber & 0xf0) >> 4,
 		inf->ldr_vnumber & 0xf,
 		inf->ldr_vchar );
