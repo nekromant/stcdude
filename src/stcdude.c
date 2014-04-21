@@ -163,7 +163,7 @@ int l_send_file(lua_State *L) {
 		do_dump_packet(packet,PACKED_SIZE(chunksize+7));
 		free(packet);
 		response = fetch_packet(us->fd);
-		rsp = response->payload;
+		rsp = (struct write_response *) response->payload;
 		if (rsp->errcode !=0 )
 		{
 			fprintf(stderr, "Warning, mcu reports error @0x%hx: %hhx\n", offset, rsp->errcode);

@@ -151,7 +151,7 @@ struct info_packet {
 #define ALPHA 580706.8955206028
 struct mcuinfo* minf;
 struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate) {
-	struct info_packet *inf = pck->data;
+	struct info_packet *inf = (struct info_packet *) pck->data;
 	minf = mcudb_query_magic(L,inf->mcuid);
 	print_mcuinfo(minf);
 	printf("MCU Options information:\n");
