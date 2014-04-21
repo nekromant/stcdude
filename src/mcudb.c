@@ -61,9 +61,10 @@ struct mcuinfo* mcudb_query_magic(void* L, char* magic) {
 	lua_getglobal(L, "get_mcu_by_magic");  /* function to be called */
 	lua_pushstring(L, mstr);   /* push 1st argument */
 	/* do the call (2 arguments, 1 result) */
-	if (lua_pcall(L, 1, 1, 0) != 0)
-		error(L, "error running function `f': %s",
+	if (lua_pcall(L, 1, 1, 0) != 0) {
+		luaL_error(L, "error running function `f': %s",
 			lua_tostring(L, -1));
+	}
 	if (!lua_istable(L,-1)) {
 		lua_pop(L,1);
 		CHECK();
