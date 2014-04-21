@@ -135,7 +135,7 @@ void stop_pulsing() {
 }
 
 
-typedef struct info_packet {
+struct info_packet {
 	unsigned char dir;
 	unsigned short len;
 	unsigned char typebyte; //??
