@@ -1,13 +1,17 @@
+#include "stcdude.h"
+#include "mcudb.h"
+#include "payload.h"
+#include "uart.h"
+
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <termios.h>
 #include <sys/stat.h>
-#include "uart.h"
-#include "stcdude.h"
 #include <lualib.h>
 #include <lauxlib.h>
 
@@ -46,14 +50,14 @@ int l_send_packet(lua_State* L) {
 	char scbuf[3];
 	scbuf[2]=0x0;
 	int len = strlen(payload)/2;
-	char* tmp = malloc(len);
+	unsigned char* tmp = malloc(len);
 	int i;
 	for (i=0;i<len; i++)
 	{
 		strncpy(scbuf,&payload[i*2],2);
 		sscanf(scbuf, "%hhx",&tmp[i]);
 	}
-	char* packet = pack_payload(tmp, len, HOST2MCU);
+	unsigned char* packet = pack_payload(tmp, len, HOST2MCU);
 	write(us->fd, packet, PACKED_SIZE(len));
 	
 	tcdrain(us->fd);
@@ -116,7 +120,7 @@ int l_send_file(lua_State *L) {
 	int argc = lua_gettop(L);
 	if (argc!=2)
 		die("Incorrect number of args to set_baud\n");
-	char* filename = lua_tostring(L,1);
+	const char* filename = lua_tostring(L,1);
 	int chunksize = lua_tonumber(L,2);
 	
 	FILE* fd = fopen(filename, "r");
@@ -143,7 +147,7 @@ int l_send_file(lua_State *L) {
 	   2 bytes, offset to write at
 	   2 bytes, size to write
 	 */
-	char* tmp = calloc(1, chunksize+7);
+	unsigned char* tmp = calloc(1, chunksize+7);
 	int len;
 	unsigned short offset=0;
 	/* Since chunksize is fixed */
@@ -158,7 +162,7 @@ int l_send_file(lua_State *L) {
 		crc = crc & 0x00ff; /* We get a shorted, one byte crc */ 
 		tmp[3]=HIGH_BYTE(offset);
 		tmp[4]=LOW_BYTE(offset);		
-		char* packet = pack_payload(tmp,chunksize+7, HOST2MCU);
+		unsigned char* packet = pack_payload(tmp,chunksize+7, HOST2MCU);
 		write(us->fd, packet, PACKED_SIZE(chunksize+7));
 		do_dump_packet(packet,PACKED_SIZE(chunksize+7));
 		free(packet);
@@ -183,7 +187,8 @@ int l_send_file(lua_State *L) {
 		display_progressbar(maxsz,sz);	
 	}
 	printf("\n");
-	
+
+	return 0;
 }
 
 static char pulsechar[] = { 0x7f, 0x7f };
@@ -193,7 +198,8 @@ int l_mcu_connect(lua_State* L) {
 	struct packet *packet = fetch_packet(us->fd);
 	stop_pulsing();
 	int hspeed = lua_tonumber(L,1);
-	parse_info_packet(L, packet, hspeed);	
+	parse_info_packet(L, packet, hspeed);
+	return 0;
 }
 
 void register_luastuff(lua_State* L) {

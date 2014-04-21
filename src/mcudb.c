@@ -1,11 +1,13 @@
+#include "mcudb.h"
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <termios.h>
 #include <time.h>
 #include "uart.h"
 #include "stcdude.h"
-#include "lualib.h"
 #include "lauxlib.h"
 
 
@@ -54,7 +56,7 @@ void print_mcuinfo(struct mcuinfo *mi) {
 	}
 }
 
-struct mcuinfo* mcudb_query_magic(void* L, char* magic) {
+struct mcuinfo* mcudb_query_magic(void* L, unsigned char* magic) {
 	CHECK();
 	char mstr[8];
 	sprintf(mstr, "%hhX%hhX", magic[0],magic[1]);
@@ -71,7 +73,7 @@ struct mcuinfo* mcudb_query_magic(void* L, char* magic) {
 		return 0;
 	}
 	CHECK();
-	char* tmp;
+	const char* tmp;
 	get_str_member(tmp,"name", lua_pop(L,1); return 0;);
 	struct mcuinfo *mi = calloc(1,sizeof(struct mcuinfo));
 	memcpy(mi->magic,magic,2);

@@ -1,16 +1,18 @@
+#include "payload.h"
+#include "mcudb.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <termios.h>
 #include <time.h>
 #include <sys/time.h>
-#include <pthread.h> 
+#include <pthread.h>
 #include <errno.h>
 
 #include "uart.h"
-#include "lualib.h"
 #include "lauxlib.h"
-#include "stcdude.h"
 
 unsigned short reverse_bytes(unsigned short value)
 {
@@ -25,9 +27,18 @@ for (i=0; i<sz; i++)
 return sum;
 }
 
+void block_read(int fd, unsigned char* buf, int sz)
+{
+	int n;
+	while(sz) {
+		n = read(fd, buf, sz);
+		sz -= n;
+		buf += n;
+	}
+}
 
-char* pack_payload(char* payload, int len, char dir) {
-	char* packet = malloc(PACKED_SIZE(len));
+unsigned char* pack_payload(unsigned char* payload, int len, char dir) {
+	unsigned char* packet = malloc(PACKED_SIZE(len));
 	packet[0]=0x46;
 	packet[1]=0xB9;
 	packet[2]=dir;
@@ -37,7 +48,7 @@ char* pack_payload(char* payload, int len, char dir) {
 	packet[4]=(char) (llen & 0xff);
 	memcpy(&packet[5], payload, len);
 	unsigned short sum = byte_sum(&packet[2], len+3);
-	char* csum = &packet[5+len];
+	unsigned char* csum = &packet[5+len];
 	csum[0] = (char) ((sum >> 8 ) & 0xff);
 	csum[1] = (char) ((sum) & 0xff);
 	csum[2] = 0x16; 
@@ -77,7 +88,7 @@ struct packet* fetch_packet(int fd) {
 	len |= (unsigned short) tmp[3]<<8;
 	len |= (unsigned short) tmp[4];
 	struct packet *pck = malloc(sizeof(struct packet));
-	char* data = malloc((int)len+3);
+	unsigned char* data = malloc((int)len+3);
 	pck->payload = &data[3];
 	pck->data = data;
 	pck->size = len-6;

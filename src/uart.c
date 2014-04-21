@@ -1,3 +1,5 @@
+#include "uart.h"
+
 #define _GNU_SOURCE 1 /* POSIX compliant source */
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,11 +9,9 @@
 #include <sys/stat.h>
 #include <sys/epoll.h>
 #include <fcntl.h>
-#include <termios.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
-#include "uart.h"
 
 //tag:/dev/ttyUSB0:115200:8:n:1\n
 //#define set_prop(key,value) if (t)
@@ -55,16 +55,6 @@ struct uart_settings_t* stc_uart_settings(char* port, int speed) {
 
 
 static struct termios oldtio,newtio;
-
-block_read(int fd, char* buf, int sz)
-{
-	int n;
-	while(sz) {
-		n = read(fd, buf, sz);
-		sz -= n;
-		buf += n;
-	}
-}
 
 //int uart_init(char* port, tcflag_t cfl, tcflag_t ifl)
 int uart_init(struct uart_settings_t* us)
