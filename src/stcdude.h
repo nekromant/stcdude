@@ -1,6 +1,8 @@
 #ifndef __STCDUDE_H
 #define __STCDUDE_H
 
+#include <stdlib.h>
+
 enum {
 	ACTION_NONE,
 	ACTION_MON, /* Packet monitoring */
@@ -19,16 +21,6 @@ struct packet {
 	unsigned char* data;
 	unsigned char* payload;
 } ;
-
-struct mcuinfo {
-	char* name;
-	char magic[2];
-	size_t iramsz;
-	size_t xramsz;
-	size_t iromsz;
-	int speed;
-	char* descr;
-} __attribute__ ((packed));
 
 enum {
 	TESTED_INFO_GET,
@@ -59,8 +51,6 @@ struct write_response {
 -- rinfo winfo
 */
 
-
-struct mcuinfo* mcudb_query_magic(void* L, char magic[2]);
 
 /* Creates an uart settings structure suitable for ISP */
 struct uart_settings_t* stc_uart_settings(char* port, int speed);

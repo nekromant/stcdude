@@ -1,16 +1,18 @@
+#include "payload.h"
+#include "mcudb.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <termios.h>
 #include <time.h>
 #include <sys/time.h>
-#include <pthread.h> 
+#include <pthread.h>
 #include <errno.h>
 
 #include "uart.h"
-#include "lualib.h"
 #include "lauxlib.h"
-#include "stcdude.h"
 
 unsigned short reverse_bytes(unsigned short value)
 {
@@ -25,9 +27,18 @@ for (i=0; i<sz; i++)
 return sum;
 }
 
+void block_read(int fd, unsigned char* buf, int sz)
+{
+	int n;
+	while(sz) {
+		n = read(fd, buf, sz);
+		sz -= n;
+		buf += n;
+	}
+}
 
-char* pack_payload(char* payload, int len, char dir) {
-	char* packet = malloc(PACKED_SIZE(len));
+unsigned char* pack_payload(unsigned char* payload, int len, char dir) {
+	unsigned char* packet = malloc(PACKED_SIZE(len));
 	packet[0]=0x46;
 	packet[1]=0xB9;
 	packet[2]=dir;
@@ -37,7 +48,7 @@ char* pack_payload(char* payload, int len, char dir) {
 	packet[4]=(char) (llen & 0xff);
 	memcpy(&packet[5], payload, len);
 	unsigned short sum = byte_sum(&packet[2], len+3);
-	char* csum = &packet[5+len];
+	unsigned char* csum = &packet[5+len];
 	csum[0] = (char) ((sum >> 8 ) & 0xff);
 	csum[1] = (char) ((sum) & 0xff);
 	csum[2] = 0x16; 
@@ -64,17 +75,20 @@ struct packet* fetch_packet(int fd) {
 	block_read(fd, &tmp[1], 4);
 	
 	if (tmp[1] != START_BYTE1) {
-		printf("Warning! Second byte looks weird: 0x%hhx vs 0x%hhx\n", tmp[1], START_BYTE1);
+		printf("Warning! Second byte looks weird: 0x%hhx vs 0x%x\n",
+			tmp[1], START_BYTE1);
 	}
 
 	if (tmp[2] != MCU2HOST){
-		printf("Warning! Direction byte incorrect: 0x%hhx vs 0x%hhx\n", tmp[2], MCU2HOST);      }
+		printf("Warning! Direction byte incorrect: 0x%hhx vs 0x%x\n",
+			tmp[2], MCU2HOST);
+	}
 	
 	unsigned short len=0; 
 	len |= (unsigned short) tmp[3]<<8;
 	len |= (unsigned short) tmp[4];
 	struct packet *pck = malloc(sizeof(struct packet));
-	char* data = malloc((int)len+3);
+	unsigned char* data = malloc((int)len+3);
 	pck->payload = &data[3];
 	pck->data = data;
 	pck->size = len-6;
@@ -132,7 +146,7 @@ void stop_pulsing() {
 }
 
 
-typedef struct info_packet {
+struct info_packet {
 	unsigned char dir;
 	unsigned short len;
 	unsigned char typebyte; //??
@@ -148,7 +162,7 @@ typedef struct info_packet {
 #define ALPHA 580706.8955206028
 struct mcuinfo* minf;
 struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate) {
-	struct info_packet *inf = pck->data;
+	struct info_packet *inf = (struct info_packet *) pck->data;
 	minf = mcudb_query_magic(L,inf->mcuid);
 	print_mcuinfo(minf);
 	printf("MCU Options information:\n");
@@ -244,7 +258,7 @@ struct mcuinfo* parse_info_packet(lua_State* L, struct packet* pck, int baudrate
 	printf("MCU Clock: %f Mhz (%f raw)\n", freq, avg);
 	lua_pushnumber(L,freq);
 	lua_setglobal(L,"mcu_clock");
-	printf("Bootloader version: %hhx.%hhx%c\n", 
+	printf("Bootloader version: %x.%x%c\n",
 		(inf->ldr_vnumber & 0xf0) >> 4,
 		inf->ldr_vnumber & 0xf,
 		inf->ldr_vchar );

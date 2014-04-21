@@ -31,7 +31,7 @@ AC_CONFIG_FILES([Makefile
 
 found_lua=no
 
-PKG_CHECK_MODULES([lua], [lua>=5.1],
+PKG_CHECK_MODULES([lua], [lua >= 5.1],
   found_lua=yes
   have_lua=yes
   ,
