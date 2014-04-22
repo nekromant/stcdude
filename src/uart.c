@@ -7,7 +7,6 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/epoll.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
