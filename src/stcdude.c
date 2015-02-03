@@ -212,8 +212,13 @@ int l_send_file(lua_State *L) {
 static char pulsechar[] = { 0x7f, 0x7f };
 
 int l_mcu_connect(lua_State* L) {
+	struct packet *packet;
 	start_pulsing(us->fd, 50000, pulsechar, 2); 
-	struct packet *packet = fetch_packet(us->fd);
+
+	do { 
+		packet = fetch_packet(us->fd);
+	} while (!packet);
+
 	stop_pulsing();
 	int hspeed = lua_tonumber(L,1);
 	parse_info_packet(L, packet, hspeed);

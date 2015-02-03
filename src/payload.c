@@ -86,7 +86,7 @@ void dump_packet(char* packet, int len) {
 struct packet* fetch_packet(int fd) {
 	unsigned char tmp[128];
 	do {
-		read(fd,tmp,1);
+		read(fd, tmp, 1);
 	} while (tmp[0] != START_BYTE0);
 	
 	/* We got the start marker, yappee! */
