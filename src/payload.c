@@ -83,6 +83,7 @@ void dump_packet(char* packet, int len) {
 	printf("\n-----8<----- \n ");
 }
 
+extern int g_no_crc;
 struct packet* fetch_packet(int fd) {
 	unsigned char tmp[128];
 	do {
@@ -116,7 +117,7 @@ struct packet* fetch_packet(int fd) {
 	unsigned short ssum = * (unsigned short *) &data[(int) len-3];
 	ssum = reverse_bytes(ssum);
         do_dump_packet(data, len);
-	if (ssum!=sum) {
+	if ((!g_no_crc) && (ssum!=sum)) {
 		printf("Checksum error, dropping packet!\n");
 		free(data);
 		free(pck);

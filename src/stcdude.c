@@ -35,6 +35,7 @@
 
 static struct uart_settings_t* us;
 static int delay_hack = 0;
+int g_no_crc = 0;
 
 void usage(char* nm){
 	printf("WARNING: This tool is in no way affiliated with STC MCU Limited. \n");
@@ -47,7 +48,8 @@ void usage(char* nm){
 	printf("\t -h \tprint this help and exit\n");
 	printf("\t -a action \tspecify an action\n");
 	printf("\t -f filename.bin \tSend this file to mcu\n");
-	printf("\t -w \t Workaround broken tcdrain\n");	
+	printf("\t -w \t Workaround broken tcdrain\n");
+	printf("\t -n \t Disable CRC checking of inbound packets (STC89)\n");	
 	printf("Valid actions (for -a) are:\n");
 	printf("\t info \t query mcu options\n");
 	printf("\t wflash \t write file to flash memory\n");
@@ -250,7 +252,7 @@ int main(int argc, char* argv[]) {
 	struct winsize w;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	
-	while ((opt = getopt(argc, argv, "b:p:lb:a:f:w")) != -1) {
+	while ((opt = getopt(argc, argv, "nb:p:lb:a:f:w")) != -1) {
 		switch (opt) {
 		case 'b':
 			sscanf(optarg, "%d:%d",&hspeed, &uspeed);
@@ -271,6 +273,9 @@ int main(int argc, char* argv[]) {
 			break;
 		case 'w':
 			delay_hack = 1;
+			break;
+		case 'n':
+			g_no_crc=1;
 			break;
 
 		default: /* '?' */
